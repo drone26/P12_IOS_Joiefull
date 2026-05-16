@@ -33,9 +33,9 @@ struct ContentView: View {
 
             if let item = selectedItem {
                 Divider()
-                // ClothingDetailView(item: item)
-                //    .frame(maxWidth: .infinity)
-                //    .transition(.move(edge: .trailing))
+                ClothingDetailView(item: item)
+                    .frame(maxWidth: .infinity)
+                    .transition(.move(edge: .trailing))
             }
         }
         .animation(.default, value: selectedItem?.id)
@@ -57,7 +57,7 @@ struct ContentView: View {
             )
             .navigationTitle("Joiefull")
             .navigationDestination(item: $selectedItem) { item in
-                // ClothingDetailView(item: item)
+                ClothingDetailView(item: item)
             }
         }
         .task {
