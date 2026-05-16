@@ -1,3 +1,10 @@
+//
+//  APIService.swift
+//  APIService
+//
+//  Created by Mathieu ARRIO on 12/05/2026.
+//
+
 import Foundation
 
 nonisolated enum APIError: Error, LocalizedError, Equatable {
