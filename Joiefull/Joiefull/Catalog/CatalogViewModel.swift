@@ -1,3 +1,10 @@
+//
+//  CatalogViewModel.swift
+//  CatalogViewModel
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import Foundation
 
 @Observable

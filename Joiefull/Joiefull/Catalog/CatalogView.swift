@@ -1,3 +1,10 @@
+//
+//  CatalogView.swift
+//  CatalogView
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import SwiftUI
 
 struct CatalogView: View {

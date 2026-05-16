@@ -1,3 +1,10 @@
+//
+//  ClothingCardView.swift
+//  ClothingCardView
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import Foundation
 
 struct ClothingItem: Codable, Identifiable, Hashable, Sendable {

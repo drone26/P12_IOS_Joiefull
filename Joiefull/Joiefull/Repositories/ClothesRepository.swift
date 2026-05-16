@@ -1,3 +1,9 @@
+//
+//  ClothesRepository.swift
+//  ClothesRepository
+//
+//  Created by Mathieu ARRIO on 12/05/2026.
+//
 import Foundation
 
 protocol ClothesRepositoryProtocol: Sendable {
