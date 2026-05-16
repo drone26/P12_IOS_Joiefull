@@ -1,6 +1,6 @@
 import Foundation
 
-struct ClothingItem: Codable, Identifiable, Equatable, Sendable {
+struct ClothingItem: Codable, Identifiable, Hashable, Sendable {
     let id: Int
     let picture: Picture
     let name: String
@@ -9,13 +9,18 @@ struct ClothingItem: Codable, Identifiable, Equatable, Sendable {
     let price: Double
     let originalPrice: Double
 
+    var rating: Double {
+        let seed = Double((id * 17 + 13) % 20)
+        return (30.0 + seed) / 10.0
+    }
+
     enum CodingKeys: String, CodingKey {
         case id, picture, name, category, likes, price
         case originalPrice = "original_price"
     }
 }
 
-struct Picture: Codable, Equatable, Sendable {
+struct Picture: Codable, Hashable, Sendable {
     let url: URL
     let description: String
 }
