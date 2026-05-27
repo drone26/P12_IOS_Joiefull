@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "first_name": "Mathieu",
+    "last_name": "ARRIO",
+    "email": "claudeai3818@arrio.fr",
+    "avatar_url": null
+  },
+  {
+    "id": 2,
+    "first_name": "Marie",
+    "last_name": "Dupont",
+    "email": "marie.dupont@example.com",
+    "avatar_url": null
+  },
+  {
+    "id": 3,
+    "first_name": "Julien",
+    "last_name": "Martin",
+    "email": "julien.martin@example.com",
+    "avatar_url": null
+  },
+  {
+    "id": 4,
+    "first_name": "Sophie",
+    "last_name": "Bernard",
+    "email": "sophie.bernard@example.com",
+    "avatar_url": null
+  },
+  {
+    "id": 5,
+    "first_name": "Camille",
+    "last_name": "Petit",
+    "email": "camille.petit@example.com",
+    "avatar_url": null
+  },
+  {
+    "id": 6,
+    "first_name": "Lucas",
+    "last_name": "Robert",
+    "email": "lucas.robert@example.com",
+    "avatar_url": null
+  }
+]

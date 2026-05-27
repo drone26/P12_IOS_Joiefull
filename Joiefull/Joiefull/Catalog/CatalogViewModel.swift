@@ -10,24 +10,45 @@ import Foundation
 @Observable
 final class CatalogViewModel {
     private(set) var clothesByCategory: [Category: [ClothingItem]] = [:]
+    private(set) var averagesByItemID: [Int: Double] = [:]
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
-    private let repository: ClothesRepositoryProtocol
+    private let clothesRepository: ClothesRepositoryProtocol
+    private let reviewRepository: ReviewRepositoryProtocol
 
-    init(repository: ClothesRepositoryProtocol = ClothesRepository()) {
-        self.repository = repository
+    init(
+        clothesRepository: ClothesRepositoryProtocol = ClothesRepository.shared,
+        reviewRepository: ReviewRepositoryProtocol = ReviewRepository.shared
+    ) {
+        self.clothesRepository = clothesRepository
+        self.reviewRepository = reviewRepository
+    }
+
+    func averageRating(for item: ClothingItem) -> Double {
+        averagesByItemID[item.id] ?? item.rating
     }
 
     func loadClothes() async {
         isLoading = true
         errorMessage = nil
+        async let items = clothesRepository.fetchClothes()
+        async let reviews = reviewRepository.fetchReviews()
         do {
-            let items = try await repository.fetchClothes()
-            clothesByCategory = Dictionary(grouping: items, by: \.category)
+            let fetchedItems = try await items
+            clothesByCategory = Dictionary(grouping: fetchedItems, by: \.category)
         } catch {
             errorMessage = error.localizedDescription
         }
+        if let fetchedReviews = try? await reviews {
+            averagesByItemID = fetchedReviews.averagesByClothingID()
+        }
         isLoading = false
+    }
+
+    func refreshAverages() async {
+        if let fetchedReviews = try? await reviewRepository.fetchReviews() {
+            averagesByItemID = fetchedReviews.averagesByClothingID()
+        }
     }
 }

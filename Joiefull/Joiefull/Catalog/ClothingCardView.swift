@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ClothingCardView: View {
     let item: ClothingItem
+    let rating: Double
     var isSelected = false
 
     private let cardWidth: CGFloat = 180
@@ -26,6 +27,25 @@ struct ClothingCardView: View {
                     .stroke(Color.accentColor, lineWidth: 3)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .frAccessibilityLabel(accessibilityDescription)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+    }
+
+    private var accessibilityDescription: String {
+        let ratingText = String(format: "%.1f", rating)
+        let priceText = item.price.formatted(.currency(code: "EUR"))
+        var parts = [
+            item.name,
+            item.picture.description,
+            "noté \(ratingText) sur 5",
+            "prix \(priceText)"
+        ]
+        if item.originalPrice != item.price {
+            parts.append("ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
+        }
+        parts.append("\(item.likes) jaime")
+        return parts.joined(separator: ", ")
     }
 
     private var imageSection: some View {
@@ -45,7 +65,6 @@ struct ClothingCardView: View {
         .overlay(alignment: .bottomTrailing) {
             likeBadge
         }
-        .accessibilityLabel(item.picture.description)
     }
 
     private var likeBadge: some View {
@@ -88,7 +107,7 @@ struct ClothingCardView: View {
         HStack(spacing: 2) {
             Image(systemName: "star.fill")
                 .foregroundStyle(.orange)
-            Text(item.rating, format: .number.precision(.fractionLength(1)))
+            Text(rating, format: .number.precision(.fractionLength(1)))
         }
         .font(.caption)
     }

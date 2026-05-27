@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "clothing_id": 1,
+    "user_id": 2,
+    "text": "Coupe parfaite, je le porte tous les jours !",
+    "rating": 5
+  },
+  {
+    "id": 2,
+    "clothing_id": 1,
+    "user_id": 3,
+    "text": "Très bonne qualité, mais taille un peu petit.",
+    "rating": 4
+  },
+  {
+    "id": 3,
+    "clothing_id": 2,
+    "user_id": 4,
+    "text": "Couleur fidèle aux photos, livraison rapide.",
+    "rating": 4
+  },
+  {
+    "id": 4,
+    "clothing_id": 3,
+    "user_id": 5,
+    "text": "Mon préféré ! Tissu agréable et finitions impeccables.",
+    "rating": 5
+  },
+  {
+    "id": 5,
+    "clothing_id": 4,
+    "user_id": 6,
+    "text": "Joli mais le tissu se froisse vite.",
+    "rating": 3
+  },
+  {
+    "id": 6,
+    "clothing_id": 5,
+    "user_id": 2,
+    "text": "Confortable, parfait pour le quotidien.",
+    "rating": 4
+  },
+  {
+    "id": 7,
+    "clothing_id": 6,
+    "user_id": 3,
+    "text": "Excellent rapport qualité/prix.",
+    "rating": 5
+  },
+  {
+    "id": 8,
+    "clothing_id": 7,
+    "user_id": 4,
+    "text": "Très satisfaite, je recommande !",
+    "rating": 5
+  },
+  {
+    "id": 9,
+    "clothing_id": 8,
+    "user_id": 6,
+    "text": "Bonne tenue après plusieurs lavages.",
+    "rating": 4
+  },
+  {
+    "id": 10,
+    "clothing_id": 9,
+    "user_id": 5,
+    "text": "Correct sans plus, je m'attendais à mieux.",
+    "rating": 3
+  },
+  {
+    "id": 11,
+    "clothing_id": 10,
+    "user_id": 2,
+    "text": "Style sympa, je l'utilise souvent.",
+    "rating": 4
+  },
+  {
+    "id": 12,
+    "clothing_id": 11,
+    "user_id": 3,
+    "text": "Magnifique, encore mieux qu'en photo !",
+    "rating": 5
+  }
+]

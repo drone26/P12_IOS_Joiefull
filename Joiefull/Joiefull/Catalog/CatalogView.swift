@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CatalogView: View {
     let clothesByCategory: [Category: [ClothingItem]]
+    let rating: (ClothingItem) -> Double
     let selectedItem: Binding<ClothingItem?>
 
     var body: some View {
@@ -19,6 +20,7 @@ struct CatalogView: View {
                         CategorySection(
                             category: category,
                             items: items,
+                            rating: rating,
                             selectedItem: selectedItem
                         )
                     }
@@ -31,6 +33,7 @@ struct CatalogView: View {
 private struct CategorySection: View {
     let category: Category
     let items: [ClothingItem]
+    let rating: (ClothingItem) -> Double
     let selectedItem: Binding<ClothingItem?>
 
     var body: some View {
@@ -39,6 +42,7 @@ private struct CategorySection: View {
                 .font(.title2)
                 .bold()
                 .padding(.horizontal)
+                .accessibilityAddTraits(.isHeader)
 
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 16) {
@@ -46,7 +50,11 @@ private struct CategorySection: View {
                         Button {
                             selectedItem.wrappedValue = item
                         } label: {
-                            ClothingCardView(item: item, isSelected: selectedItem.wrappedValue?.id == item.id)
+                            ClothingCardView(
+                                item: item,
+                                rating: rating(item),
+                                isSelected: selectedItem.wrappedValue?.id == item.id
+                            )
                         }
                         .buttonStyle(.plain)
                     }
