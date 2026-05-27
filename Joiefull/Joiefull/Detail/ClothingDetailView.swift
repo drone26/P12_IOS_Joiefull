@@ -133,31 +133,25 @@ struct ClothingDetailView: View {
                                 .font(.title2)
                         }
                         .buttonStyle(.plain)
-                    }
-                }
-                .accessibilityElement(children: .ignore)
-                .frAccessibilityLabel("Votre note")
-                .frAccessibilityValue(viewModel.userRating == 0 ? "Aucune note" : "\(viewModel.userRating) sur 5")
-                .frAccessibilityHint("Balayez vers le haut ou vers le bas pour ajuster votre note")
-                .accessibilityAdjustableAction { direction in
-                    switch direction {
-                    case .increment:
-                        if viewModel.userRating < 5 { viewModel.userRating += 1 }
-                    case .decrement:
-                        if viewModel.userRating > 0 { viewModel.userRating -= 1 }
-                    @unknown default:
-                        break
+
+                        .frAccessibilityLabel(starLabel(for: star))
+                        .accessibilityAddTraits(star == viewModel.userRating ? [.isButton, .isSelected] : .isButton)
                     }
                 }
             }
 
-            TextField("Partagez ici vos impressions sur cette pièce", text: reviewText, axis: .vertical)
+            TextField("Partagez ici vos impressions sur cet article", text: reviewText, axis: .vertical)
                 .lineLimit(3...6)
                 .textFieldStyle(.roundedBorder)
                 .frAccessibilityLabel("Votre avis")
-                .frAccessibilityHint("Partagez ici vos impressions sur cette pièce")
+                .frAccessibilityHint("Partagez ici vos impressions sur cet article")
         }
         .padding(.horizontal)
+    }
+
+    private func starLabel(for star: Int) -> String {
+        let plural = star > 1 ? "s" : ""
+        return "Noter \(star) étoile\(plural)"
     }
 
     @ViewBuilder
