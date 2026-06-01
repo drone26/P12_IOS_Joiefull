@@ -51,15 +51,16 @@ struct ClothingDetailView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 400)
         .clipShape(.rect(cornerRadius: 16))
+        .frAccessibilityLabel(item.picture.description)
         .overlay(alignment: .topTrailing) {
             ShareLink(item: item.picture.url) {
                 Image(systemName: "square.and.arrow.up")
                     .font(.title3)
                     .padding(10)
                     .background(.ultraThinMaterial, in: .circle)
+                    .accessibilityLabel("Partager")
             }
             .padding(12)
-            .frAccessibilityLabel("Partager")
         }
         .overlay(alignment: .bottomTrailing) {
             HStack(spacing: 4) {
@@ -76,7 +77,6 @@ struct ClothingDetailView: View {
             .frAccessibilityLabel("\(item.likes) j'aime")
         }
         .padding(.horizontal)
-        .frAccessibilityLabel(item.picture.description)
     }
 
     private var infoSection: some View {
