@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ClothingItem: Codable, Identifiable, Hashable, Sendable {
+nonisolated struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Sendable {
     let id: Int
     let picture: Picture
     let name: String
@@ -27,12 +27,12 @@ struct ClothingItem: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
-struct Picture: Codable, Hashable, Sendable {
+nonisolated struct Picture: Codable, nonisolated Hashable, Sendable {
     let url: URL
     let description: String
 }
 
-enum Category: String, Codable, Sendable, CaseIterable {
+nonisolated enum Category: String, Codable, Sendable, CaseIterable {
     case tops = "TOPS"
     case bottoms = "BOTTOMS"
     case shoes = "SHOES"

@@ -15,11 +15,11 @@ final class JoiefullUITests: XCTestCase {
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
 
-        let thirdStar = app.buttons["3 étoiles"]
+        let thirdStar = app.buttons["Noter 3 étoiles"]
         XCTAssertTrue(thirdStar.waitForExistence(timeout: 5))
         thirdStar.tap()
 
-        let reviewField = app.textFields["Partagez ici vos impressions sur cette pièce"]
+        let reviewField = app.textFields["Votre avis"]
         XCTAssertTrue(reviewField.exists)
         reviewField.tap()
         reviewField.typeText("Super article")
@@ -29,8 +29,8 @@ final class JoiefullUITests: XCTestCase {
         firstCard.tap()
         XCTAssertTrue(thirdStar.waitForExistence(timeout: 5))
 
-        let starButtons = app.buttons.matching(NSPredicate(format: "label MATCHES '.*étoile.*'"))
-        XCTAssertGreaterThan(starButtons.count, 0)
+        let starButtons = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Noter'"))
+        XCTAssertEqual(starButtons.count, 5)
     }
 
     @MainActor
