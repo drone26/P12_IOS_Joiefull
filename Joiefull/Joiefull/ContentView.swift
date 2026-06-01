@@ -13,11 +13,14 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
-        if horizontalSizeClass == .regular {
-            tabletLayout
-        } else {
-            phoneLayout
+        Group {
+            if horizontalSizeClass == .regular {
+                tabletLayout
+            } else {
+                phoneLayout
+            }
         }
+        .environment(\.locale, Locale(identifier: "fr_FR"))
     }
 
     private var tabletLayout: some View {
@@ -25,6 +28,7 @@ struct ContentView: View {
             NavigationStack {
                 CatalogView(
                     clothesByCategory: viewModel.clothesByCategory,
+                    rating: viewModel.averageRating(for:),
                     selectedItem: $selectedItem
                 )
                 .navigationTitle("Joiefull")
@@ -33,7 +37,10 @@ struct ContentView: View {
 
             if let item = selectedItem {
                 Divider()
-                ClothingDetailView(item: item)
+                ClothingDetailView(item: item, onSubmit: { [viewModel] in
+                    await viewModel.refreshAverages()
+                })
+                    .id(item.id)
                     .frame(maxWidth: .infinity)
                     .transition(.move(edge: .trailing))
             }
@@ -53,11 +60,14 @@ struct ContentView: View {
         NavigationStack {
             CatalogView(
                 clothesByCategory: viewModel.clothesByCategory,
+                rating: viewModel.averageRating(for:),
                 selectedItem: $selectedItem
             )
             .navigationTitle("Joiefull")
             .navigationDestination(item: $selectedItem) { item in
-                ClothingDetailView(item: item)
+                ClothingDetailView(item: item, onSubmit: { [viewModel] in
+                    await viewModel.refreshAverages()
+                })
             }
         }
         .task {

@@ -9,6 +9,6 @@ import Foundation
 
 nonisolated enum Constants {
     enum API {
-        static let baseURL = URL(string: "https://raw.githubusercontent.com/OpenClassrooms-Student-Center/Cr-ez-une-interface-dynamique-et-accessible-avec-SwiftUI/main")
+        static let baseURL = URL(string: "https://joiefull-api.mydatacenter.eu/")
     }
 }

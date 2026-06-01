@@ -11,14 +11,20 @@ protocol ClothesRepositoryProtocol: Sendable {
 }
 
 actor ClothesRepository: ClothesRepositoryProtocol {
+    static let shared = ClothesRepository()
+
     private let apiService: APIService
+    private var cachedClothes: [ClothingItem]?
 
     init(apiService: APIService = APIService()) {
         self.apiService = apiService
     }
 
     func fetchClothes() async throws -> [ClothingItem] {
-        try await apiService.request(Endpoint.fetchClothes)
+        if let cachedClothes { return cachedClothes }
+        let clothes: [ClothingItem] = try await apiService.request(Endpoint.fetchClothes)
+        cachedClothes = clothes
+        return clothes
     }
 
     private enum Endpoint: APIEndpoint {
@@ -29,7 +35,7 @@ actor ClothesRepository: ClothesRepositoryProtocol {
         var path: String {
             switch self {
             case .fetchClothes:
-                return "api/clothes.json"
+                return "clothes/"
             }
         }
 
