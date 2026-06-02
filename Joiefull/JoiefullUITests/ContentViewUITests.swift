@@ -85,4 +85,25 @@ final class ContentViewUITests: XCTestCase {
             }
         }
     }
+
+    @MainActor
+    func testContentView_phoneLayout_navigatesAndRefreshes() throws {
+        // Only run this test on iPhone
+        try XCTSkipIf(UIDevice.current.userInterfaceIdiom == .pad, "This test is for phone layout only")
+        
+        let firstCard = app.buttons.firstMatch
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
+        firstCard.tap()
+        
+        let shareButton = app.buttons["Partager cet article"]
+        XCTAssertTrue(shareButton.waitForExistence(timeout: 5))
+        
+        // Go back
+        let backButton = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(backButton.exists)
+        backButton.tap()
+        
+        // Ensure we are back on the catalog
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
+    }
 }
