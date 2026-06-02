@@ -53,14 +53,8 @@ struct ClothingDetailView: View {
         .clipShape(.rect(cornerRadius: 16))
         .frAccessibilityLabel(item.picture.description)
         .overlay(alignment: .topTrailing) {
-            ShareLink(item: item.picture.url) {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.title3)
-                    .padding(10)
-                    .background(.ultraThinMaterial, in: .circle)
-                    .accessibilityLabel("Partager")
-            }
-            .padding(12)
+            CustomShareButton(item: item)
+                .padding(12)
         }
         .overlay(alignment: .bottomTrailing) {
             HStack(spacing: 4) {
@@ -234,3 +228,86 @@ private struct UserAvatar: View {
     }
 }
 
+private struct CustomShareButton: View {
+    let item: ClothingItem
+    @State private var showCommentSheet = false
+    @State private var showShareSheet = false
+    @State private var customComment = ""
+    
+    var body: some View {
+        Button {
+            showCommentSheet = true
+        } label: {
+            Image(systemName: "square.and.arrow.up")
+                .font(.title3)
+                .padding(10)
+                .background(.ultraThinMaterial, in: .circle)
+                .frAccessibilityLabel("Partager cet article")
+        }
+        .sheet(isPresented: $showCommentSheet) {
+            NavigationStack {
+                Form {
+                    Section("Votre commentaire") {
+                        TextField("Ajouter un commentaire personnalisé...", text: $customComment, axis: .vertical)
+                            .lineLimit(3...6)
+                            .frAccessibilityLabel("Commentaire personnalisé pour le partage")
+                            .frAccessibilityHint("Ce texte sera ajouté à votre partage")
+                    }
+                    
+                    Section {
+                        Button {
+                            showCommentSheet = false
+                            // On attend que la popup de commentaire disparaisse avant d'afficher celle de partage
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                showShareSheet = true
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("Partage")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                        .frAccessibilityLabel("Continuer le partage")
+                        .frAccessibilityHint("Ouvre les options de partage")
+                    }
+                }
+                .navigationTitle("Partager l'article")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Annuler") {
+                            showCommentSheet = false
+                        }
+                        .frAccessibilityLabel("Annuler le partage")
+                    }
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ActivityViewController(activityItems: {
+                var items: [Any] = []
+                if !customComment.isEmpty {
+                    items.append(customComment)
+                }
+                if let url = Constants.API.baseURL?.appending(path: "articles/\(item.id)") {
+                    items.append(url)
+                }
+                return items
+            }())
+            .presentationDetents([.medium, .large])
+        }
+    }
+}
+
+private struct ActivityViewController: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    let applicationActivities: [UIActivity]? = nil
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
