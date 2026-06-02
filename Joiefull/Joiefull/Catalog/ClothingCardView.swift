@@ -11,6 +11,8 @@ struct ClothingCardView: View {
     let item: ClothingItem
     let rating: Double
     var isSelected = false
+    
+    @Environment(FavoritesManager.self) private var favoritesManager
 
     private let cardWidth: CGFloat = 180
     private let imageHeight: CGFloat = 200
@@ -30,6 +32,9 @@ struct ClothingCardView: View {
         .accessibilityElement(children: .ignore)
         .frAccessibilityLabel(accessibilityDescription)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+        .accessibilityAction(named: favoritesManager.isFavorite(id: item.id) ? "Retirer des favoris" : "Ajouter aux favoris") {
+            favoritesManager.toggleFavorite(for: item.id)
+        }
     }
 
     private var accessibilityDescription: String {
@@ -44,7 +49,10 @@ struct ClothingCardView: View {
         if item.originalPrice != item.price {
             parts.append("ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
         }
-        parts.append("\(item.likes) jaime")
+        if favoritesManager.isFavorite(id: item.id) {
+            parts.append("Favori")
+        }
+        parts.append("\(favoritesManager.likesCount(for: item)) jaime")
         return parts.joined(separator: ", ")
     }
 
@@ -68,15 +76,22 @@ struct ClothingCardView: View {
     }
 
     private var likeBadge: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "heart")
-            Text("\(item.likes)")
+        Button {
+            favoritesManager.toggleFavorite(for: item.id)
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: favoritesManager.isFavorite(id: item.id) ? "heart.fill" : "heart")
+                    .foregroundStyle(favoritesManager.isFavorite(id: item.id) ? .red : .primary)
+                Text("\(favoritesManager.likesCount(for: item))")
+                    .foregroundStyle(.primary)
+            }
+            .font(.caption)
+            .bold()
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.ultraThinMaterial, in: .capsule)
         }
-        .font(.caption)
-        .bold()
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(.ultraThinMaterial, in: .capsule)
+        .buttonStyle(.borderless)
         .padding(8)
     }
 

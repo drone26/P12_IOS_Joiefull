@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ClothingDetailView: View {
     @State private var viewModel: ClothingDetailViewModel
+    @Environment(FavoritesManager.self) private var favoritesManager
     private let onSubmit: (@Sendable () async -> Void)?
 
     init(item: ClothingItem, onSubmit: (@Sendable () async -> Void)? = nil) {
@@ -57,18 +58,26 @@ struct ClothingDetailView: View {
                 .padding(12)
         }
         .overlay(alignment: .bottomTrailing) {
-            HStack(spacing: 4) {
-                Image(systemName: "heart")
-                Text("\(item.likes)")
+            Button {
+                favoritesManager.toggleFavorite(for: item.id)
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: favoritesManager.isFavorite(id: item.id) ? "heart.fill" : "heart")
+                        .foregroundStyle(favoritesManager.isFavorite(id: item.id) ? .red : .primary)
+                    Text("\(favoritesManager.likesCount(for: item))")
+                        .foregroundStyle(.primary)
+                }
+                .font(.title3)
+                .bold()
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial, in: .capsule)
             }
-            .font(.title3)
-            .bold()
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(.ultraThinMaterial, in: .capsule)
+            .buttonStyle(.plain)
             .padding(12)
             .accessibilityElement(children: .ignore)
-            .frAccessibilityLabel("\(item.likes) j'aime")
+            .frAccessibilityLabel(favoritesManager.isFavorite(id: item.id) ? "Retirer des favoris, \(favoritesManager.likesCount(for: item)) j'aime" : "Ajouter aux favoris, \(favoritesManager.likesCount(for: item)) j'aime")
+            .accessibilityAddTraits(.isButton)
         }
         .padding(.horizontal)
     }
