@@ -15,6 +15,9 @@ final class JoiefullUITestsLaunchTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        
+        let testOrientation = ProcessInfo.processInfo.environment["TEST_ORIENTATION"] ?? "portrait"
+        XCUIDevice.shared.orientation = (testOrientation == "landscape") ? .landscapeLeft : .portrait
     }
 
     @MainActor

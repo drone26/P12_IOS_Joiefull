@@ -4,6 +4,10 @@ final class JoiefullUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        
+        // Set orientation for the tests
+        let testOrientation = ProcessInfo.processInfo.environment["TEST_ORIENTATION"] ?? "portrait"
+        XCUIDevice.shared.orientation = (testOrientation == "landscape") ? .landscapeLeft : .portrait
     }
 
     @MainActor
@@ -24,7 +28,12 @@ final class JoiefullUITests: XCTestCase {
         reviewField.tap()
         reviewField.typeText("Super article")
 
-        app.navigationBars.buttons.firstMatch.tap()
+        if UIDevice.current.userInterfaceIdiom != .pad {
+            let backButton = app.navigationBars.buttons.firstMatch
+            if backButton.exists {
+                backButton.tap()
+            }
+        }
 
         firstCard.tap()
         XCTAssertTrue(thirdStar.waitForExistence(timeout: 5))

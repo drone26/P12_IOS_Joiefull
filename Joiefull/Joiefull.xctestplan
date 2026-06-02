@@ -1,0 +1,45 @@
+{
+  "configurations" : [
+    {
+      "id" : "PORTRAIT",
+      "name" : "Portrait",
+      "options" : {
+        "environmentVariableEntries" : [
+          {
+            "key" : "TEST_ORIENTATION",
+            "value" : "portrait"
+          }
+        ]
+      }
+    },
+    {
+      "id" : "LANDSCAPE",
+      "name" : "Landscape",
+      "options" : {
+        "environmentVariableEntries" : [
+          {
+            "key" : "TEST_ORIENTATION",
+            "value" : "landscape"
+          }
+        ]
+      }
+    }
+  ],
+  "defaultOptions" : {
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Joiefull.xcodeproj",
+        "name" : "JoiefullUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Joiefull.xcodeproj",
+        "name" : "JoiefullTests"
+      }
+    }
+  ],
+  "version" : 1
+}

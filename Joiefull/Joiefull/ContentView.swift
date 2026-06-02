@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var viewModel = CatalogViewModel()
     @State private var selectedItem: ClothingItem?
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var favoritesManager = FavoritesManager.shared
 
     var body: some View {
         Group {
@@ -21,6 +22,7 @@ struct ContentView: View {
             }
         }
         .environment(\.locale, Locale(identifier: "fr_FR"))
+        .environment(favoritesManager)
     }
 
     private var tabletLayout: some View {
