@@ -25,7 +25,7 @@ extension View {
     }
 }
 
-private func frenchAttributed(_ string: String) -> AttributedString {
+func frenchAttributed(_ string: String) -> AttributedString {
     var attr = AttributedString(string)
     attr.languageIdentifier = "fr-FR"
     return attr
