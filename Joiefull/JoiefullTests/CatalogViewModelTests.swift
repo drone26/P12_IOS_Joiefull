@@ -59,7 +59,6 @@ private func makeItem(
         picture: Picture(url: URL(string: "https://example.com/\(id).jpg")!, description: "d\(id)"),
         name: name,
         category: category,
-        likes: 0,
         price: price,
         originalPrice: originalPrice
     )

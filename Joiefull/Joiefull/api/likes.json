@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "clothing_id": 1,
+    "user_id": 2
+  },
+  {
+    "id": 2,
+    "clothing_id": 1,
+    "user_id": 3
+  },
+  {
+    "id": 3,
+    "clothing_id": 2,
+    "user_id": 4
+  },
+  {
+    "id": 4,
+    "clothing_id": 3,
+    "user_id": 5
+  },
+  {
+    "id": 5,
+    "clothing_id": 4,
+    "user_id": 6
+  },
+  {
+    "id": 6,
+    "clothing_id": 5,
+    "user_id": 2
+  },
+  {
+    "id": 7,
+    "clothing_id": 6,
+    "user_id": 3
+  },
+  {
+    "id": 8,
+    "clothing_id": 7,
+    "user_id": 4
+  },
+  {
+    "id": 9,
+    "clothing_id": 8,
+    "user_id": 6
+  },
+  {
+    "id": 10,
+    "clothing_id": 9,
+    "user_id": 5
+  },
+  {
+    "id": 11,
+    "clothing_id": 10,
+    "user_id": 2
+  },
+  {
+    "id": 12,
+    "clothing_id": 11,
+    "user_id": 3
+  }
+]

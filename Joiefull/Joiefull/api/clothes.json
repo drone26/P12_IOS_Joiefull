@@ -7,7 +7,6 @@
     },
     "name": "Sac à main orange",
     "category": "ACCESSORIES",
-    "likes": 56,
     "price": 69.99,
     "original_price": 69.99
   },
@@ -19,7 +18,6 @@
     },
     "name": "Jean pour femme",
     "category": "BOTTOMS",
-    "likes": 55,
     "price": 49.99,
     "original_price": 59.99
   },
@@ -31,7 +29,6 @@
     },
     "name": "Bottes noires pour l'automne",
     "category": "SHOES",
-    "likes": 4,
     "price": 99.99,
     "original_price": 119.99
   },
@@ -43,7 +40,6 @@
     },
     "name": "Blazer marron",
     "category": "TOPS",
-    "likes": 15,
     "price": 79.99,
     "original_price": 79.99
   },
@@ -55,7 +51,6 @@
     },
     "name": "Pull vert femme",
     "category": "TOPS",
-    "likes": 15,
     "price": 29.99,
     "original_price": 39.99
   },
@@ -67,7 +62,6 @@
     },
     "name": "Escarpins de soirée",
     "category": "SHOES",
-    "likes": 15,
     "price": 139.99,
     "original_price": 139.99
   },
@@ -79,7 +73,6 @@
     },
     "name": "Sac à dos d'aventurier",
     "category": "ACCESSORIES",
-    "likes": 9,
     "price": 69.99,
     "original_price": 99.99
   },
@@ -91,7 +84,6 @@
     },
     "name": "Bomber automnal pour homme",
     "category": "TOPS",
-    "likes": 30,
     "price": 89.99,
     "original_price": 109.99
   },
@@ -103,7 +95,6 @@
     },
     "name": "Sweat jaune",
     "category": "TOPS",
-    "likes": 6,
     "price": 39.99,
     "original_price": 39.99
   },
@@ -115,7 +106,6 @@
     },
     "name": "T-shirt casual rose",
     "category": "TOPS",
-    "likes": 35,
     "price": 29.99,
     "original_price": 29.99
   },
@@ -127,7 +117,6 @@
     },
     "name": "Pendentif bleu pour femme",
     "category": "ACCESSORIES",
-    "likes": 70,
     "price": 19.99,
     "original_price": 69.99
   },
@@ -139,7 +128,6 @@
     },
     "name": "Pantalon noir",
     "category": "BOTTOMS",
-    "likes": 54,
     "price": 49.99,
     "original_price": 69.99
   }

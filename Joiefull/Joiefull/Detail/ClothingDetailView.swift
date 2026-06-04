@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ClothingDetailView: View {
     @State private var viewModel: ClothingDetailViewModel
-    @Environment(FavoritesManager.self) private var favoritesManager
+    @Environment(LikesRepository.self) private var likesRepository
     private let onSubmit: (@Sendable () async -> Void)?
 
     init(item: ClothingItem, onSubmit: (@Sendable () async -> Void)? = nil) {
@@ -59,12 +59,12 @@ struct ClothingDetailView: View {
         }
         .overlay(alignment: .bottomTrailing) {
             Button {
-                favoritesManager.toggleFavorite(for: item.id)
+                likesRepository.toggleLike(for: item.id)
             } label: {
                 HStack(spacing: 4) {
-                    Image(systemName: favoritesManager.isFavorite(id: item.id) ? "heart.fill" : "heart")
-                        .foregroundStyle(favoritesManager.isFavorite(id: item.id) ? .red : .primary)
-                    Text("\(favoritesManager.likesCount(for: item))")
+                    Image(systemName: likesRepository.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
+                        .foregroundStyle(likesRepository.isLiked(clothingId: item.id) ? .red : .primary)
+                    Text("\(likesRepository.likesCount(for: item.id))")
                         .foregroundStyle(.primary)
                 }
                 .font(.title3)
@@ -76,7 +76,7 @@ struct ClothingDetailView: View {
             .buttonStyle(.plain)
             .padding(12)
             .accessibilityElement(children: .ignore)
-            .frAccessibilityLabel(favoritesManager.isFavorite(id: item.id) ? "Retirer des favoris, \(favoritesManager.likesCount(for: item)) j'aime" : "Ajouter aux favoris, \(favoritesManager.likesCount(for: item)) j'aime")
+            .frAccessibilityLabel(likesRepository.isLiked(clothingId: item.id) ? "Retirer des favoris, \(likesRepository.likesCount(for: item.id)) j'aime" : "Ajouter aux favoris, \(likesRepository.likesCount(for: item.id)) j'aime")
             .accessibilityAddTraits(.isButton)
         }
         .padding(.horizontal)
