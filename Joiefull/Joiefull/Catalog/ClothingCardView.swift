@@ -12,7 +12,7 @@ struct ClothingCardView: View {
     let rating: Double
     var isSelected = false
     
-    @Environment(FavoritesManager.self) private var favoritesManager
+    @Environment(LikesRepository.self) private var likesRepository
 
     private let cardWidth: CGFloat = 180
     private let imageHeight: CGFloat = 200
@@ -32,8 +32,8 @@ struct ClothingCardView: View {
         .accessibilityElement(children: .ignore)
         .frAccessibilityLabel(accessibilityDescription)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-        .accessibilityAction(named: favoritesManager.isFavorite(id: item.id) ? "Retirer des favoris" : "Ajouter aux favoris") {
-            favoritesManager.toggleFavorite(for: item.id)
+        .accessibilityAction(named: likesRepository.isLiked(clothingId: item.id) ? "Retirer des favoris" : "Ajouter aux favoris") {
+            likesRepository.toggleLike(for: item.id)
         }
     }
 
@@ -49,10 +49,10 @@ struct ClothingCardView: View {
         if item.originalPrice != item.price {
             parts.append("ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
         }
-        if favoritesManager.isFavorite(id: item.id) {
+        if likesRepository.isLiked(clothingId: item.id) {
             parts.append("Favori")
         }
-        parts.append("\(favoritesManager.likesCount(for: item)) jaime")
+        parts.append("\(likesRepository.likesCount(for: item.id)) jaime")
         return parts.joined(separator: ", ")
     }
 
@@ -77,12 +77,12 @@ struct ClothingCardView: View {
 
     private var likeBadge: some View {
         Button {
-            favoritesManager.toggleFavorite(for: item.id)
+            likesRepository.toggleLike(for: item.id)
         } label: {
             HStack(spacing: 4) {
-                Image(systemName: favoritesManager.isFavorite(id: item.id) ? "heart.fill" : "heart")
-                    .foregroundStyle(favoritesManager.isFavorite(id: item.id) ? .red : .primary)
-                Text("\(favoritesManager.likesCount(for: item))")
+                Image(systemName: likesRepository.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
+                    .foregroundStyle(likesRepository.isLiked(clothingId: item.id) ? .red : .primary)
+                Text("\(likesRepository.likesCount(for: item.id))")
                     .foregroundStyle(.primary)
             }
             .font(.caption)

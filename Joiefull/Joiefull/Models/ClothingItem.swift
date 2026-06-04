@@ -12,7 +12,6 @@ nonisolated struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Se
     let picture: Picture
     let name: String
     let category: Category
-    let likes: Int
     let price: Double
     let originalPrice: Double
 
@@ -22,7 +21,7 @@ nonisolated struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Se
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, picture, name, category, likes, price
+        case id, picture, name, category, price
         case originalPrice = "original_price"
     }
 }
