@@ -21,7 +21,6 @@ struct ClothingItemTests {
             },
             "name": "Bomber",
             "category": "TOPS",
-            "likes": 30,
             "price": 89.99,
             "original_price": 109.99
         }
@@ -32,7 +31,6 @@ struct ClothingItemTests {
         #expect(item.id == 7)
         #expect(item.name == "Bomber")
         #expect(item.category == .tops)
-        #expect(item.likes == 30)
         #expect(item.price == 89.99)
         #expect(item.originalPrice == 109.99)
         #expect(item.picture.url == URL(string: "https://example.com/p.jpg"))
@@ -45,7 +43,6 @@ struct ClothingItemTests {
             picture: Picture(url: URL(string: "https://example.com/x.jpg")!, description: "x"),
             name: "Item",
             category: .accessories,
-            likes: 12,
             price: 19.99,
             originalPrice: 29.99
         )
@@ -135,7 +132,6 @@ struct ClothingItemTests {
             picture: Picture(url: URL(string: "https://example.com/\(id).jpg")!, description: "d"),
             name: "name",
             category: .tops,
-            likes: 0,
             price: 0,
             originalPrice: 0
         )
