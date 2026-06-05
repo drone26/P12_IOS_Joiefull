@@ -22,7 +22,9 @@ final class JoiefullUITestsLaunchTests: XCTestCase {
 
     @MainActor
     func testLaunch() throws {
+        // Given
         let app = XCUIApplication()
+        // When
         app.launch()
 
         // Insert steps here to perform after app launch but before taking a screenshot,

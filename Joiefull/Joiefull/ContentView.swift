@@ -11,7 +11,7 @@ struct ContentView: View {
     @State private var viewModel = CatalogViewModel()
     @State private var selectedItem: ClothingItem?
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @State private var likesRepository = LikesRepository.shared
+    @State private var likesViewModel = LikesViewModel()
 
     var body: some View {
         Group {
@@ -22,7 +22,7 @@ struct ContentView: View {
             }
         }
         .environment(\.locale, Locale(identifier: "fr_FR"))
-        .environment(likesRepository)
+        .environment(likesViewModel)
     }
 
     private var tabletLayout: some View {
@@ -50,7 +50,7 @@ struct ContentView: View {
         .animation(.default, value: selectedItem?.id)
         .task {
             await viewModel.loadClothes()
-            await likesRepository.loadLikes()
+            await likesViewModel.loadLikes()
         }
         .overlay {
             if viewModel.isLoading {
@@ -75,7 +75,7 @@ struct ContentView: View {
         }
         .task {
             await viewModel.loadClothes()
-            await likesRepository.loadLikes()
+            await likesViewModel.loadLikes()
         }
         .overlay {
             if viewModel.isLoading {

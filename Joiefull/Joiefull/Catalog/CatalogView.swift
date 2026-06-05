@@ -39,13 +39,12 @@ private struct CategorySection: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(category.displayName)
-                .font(.title2)
-                .bold()
+                .font(.title2.bold())
                 .padding(.horizontal)
                 .accessibilityAddTraits(.isHeader)
 
             ScrollView(.horizontal) {
-                LazyHStack(spacing: 16) {
+                HStack(alignment: .top, spacing: 16) {
                     ForEach(items) { item in
                         Button {
                             selectedItem.wrappedValue = item

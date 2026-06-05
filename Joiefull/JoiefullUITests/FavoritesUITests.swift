@@ -1,3 +1,10 @@
+//
+//  FavoritesUITests.swift
+//  FavoritesUITests
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import XCTest
 
 final class FavoritesUITests: XCTestCase {
@@ -17,7 +24,10 @@ final class FavoritesUITests: XCTestCase {
 
     @MainActor
     func testFavorites_canAddAndRemoveFromCatalog() {
+        // Given
+        // When
         let firstCard = app.buttons.firstMatch
+        // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
         
         firstCard.tap()

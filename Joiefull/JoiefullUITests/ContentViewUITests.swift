@@ -23,11 +23,14 @@ final class ContentViewUITests: XCTestCase {
 
     @MainActor
     func testContentView_showsJoiefullTitle_andCatalog() {
+        // Given
         // Verify the navigation title is present
         let navBarTitle = app.navigationBars["Joiefull"]
         // In SwiftUI, navigation titles on macOS/iPad might appear as static texts if they aren't in a standard nav bar,
         // but typically they are in navigationBars or staticTexts
+        // When
         let titleExists = navBarTitle.exists || app.staticTexts["Joiefull"].exists
+        // Then
         XCTAssertTrue(titleExists, "The ContentView should display the 'Joiefull' title")
         
         // Verify that the CatalogView is rendered by looking for a category header
@@ -37,8 +40,11 @@ final class ContentViewUITests: XCTestCase {
     
     @MainActor
     func testContentView_navigatesToDetailView_whenItemIsTapped() {
+        // Given
         // Find the first clothing item card
+        // When
         let firstCard = app.buttons.firstMatch
+        // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         
         // Tap it
@@ -54,11 +60,14 @@ final class ContentViewUITests: XCTestCase {
 
     @MainActor
     func testContentView_tabletLayout_displaysDetailAndRefreshes_whenSwitchingItems() {
+        // Given
         // This test is particularly useful for iPad layout (tabletLayout) where selecting a new item
         // replaces the detail view, triggering onDisappear and the onSubmit closure (lines 38-47).
         
         // Find the first and second cards
+        // When
         let buttons = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'"))
+        // Then
         XCTAssertTrue(buttons.count >= 2, "There should be at least two items in the catalog")
         
         let firstCard = buttons.element(boundBy: 0)
@@ -88,10 +97,13 @@ final class ContentViewUITests: XCTestCase {
 
     @MainActor
     func testContentView_phoneLayout_navigatesAndRefreshes() throws {
+        // Given
         // Only run this test on iPhone
         try XCTSkipIf(UIDevice.current.userInterfaceIdiom == .pad, "This test is for phone layout only")
         
+        // When
         let firstCard = app.buttons.firstMatch
+        // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
         

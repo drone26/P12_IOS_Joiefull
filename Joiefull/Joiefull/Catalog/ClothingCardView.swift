@@ -12,10 +12,10 @@ struct ClothingCardView: View {
     let rating: Double
     var isSelected = false
     
-    @Environment(LikesRepository.self) private var likesRepository
+    @Environment(LikesViewModel.self) private var likesViewModel
 
-    private let cardWidth: CGFloat = 180
-    private let imageHeight: CGFloat = 200
+    @ScaledMetric private var cardWidth: CGFloat = 180
+    @ScaledMetric private var imageHeight: CGFloat = 200
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -23,6 +23,7 @@ struct ClothingCardView: View {
             infoSection
         }
         .frame(width: cardWidth)
+        .frame(maxHeight: .infinity, alignment: .top)
         .overlay {
             if isSelected {
                 RoundedRectangle(cornerRadius: 12)
@@ -32,8 +33,8 @@ struct ClothingCardView: View {
         .accessibilityElement(children: .ignore)
         .frAccessibilityLabel(accessibilityDescription)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-        .accessibilityAction(named: likesRepository.isLiked(clothingId: item.id) ? "Retirer des favoris" : "Ajouter aux favoris") {
-            likesRepository.toggleLike(for: item.id)
+        .accessibilityAction(named: likesViewModel.isLiked(clothingId: item.id) ? "Retirer des favoris" : "Ajouter aux favoris") {
+            Task { await likesViewModel.toggleLike(for: item.id) }
         }
     }
 
@@ -49,10 +50,10 @@ struct ClothingCardView: View {
         if item.originalPrice != item.price {
             parts.append("ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
         }
-        if likesRepository.isLiked(clothingId: item.id) {
+        if likesViewModel.isLiked(clothingId: item.id) {
             parts.append("Favori")
         }
-        parts.append("\(likesRepository.likesCount(for: item.id)) jaime")
+        parts.append("\(likesViewModel.likesCount(for: item.id)) jaime")
         return parts.joined(separator: ", ")
     }
 
@@ -77,42 +78,42 @@ struct ClothingCardView: View {
 
     private var likeBadge: some View {
         Button {
-            likesRepository.toggleLike(for: item.id)
+            Task { await likesViewModel.toggleLike(for: item.id) }
         } label: {
             HStack(spacing: 4) {
-                Image(systemName: likesRepository.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
-                    .foregroundStyle(likesRepository.isLiked(clothingId: item.id) ? .red : .primary)
-                Text("\(likesRepository.likesCount(for: item.id))")
+                Image(systemName: likesViewModel.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
+                    .foregroundStyle(likesViewModel.isLiked(clothingId: item.id) ? .red : .primary)
+                    .font(.caption.bold())
+                    .accessibilityHidden(true)
+                Text("\(likesViewModel.likesCount(for: item.id))")
                     .foregroundStyle(.primary)
+                    .font(.caption.bold())
             }
-            .font(.caption)
-            .bold()
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(.ultraThinMaterial, in: .capsule)
+            .background(.regularMaterial, in: .capsule)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
         .padding(8)
     }
 
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: 2) {
-            HStack {
+            HStack(alignment: .top) {
                 Text(item.name)
                     .font(.subheadline)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 ratingLabel
             }
+            Spacer(minLength: 0)
             HStack {
                 Text(item.price, format: .currency(code: "EUR"))
-                    .font(.subheadline)
-                    .bold()
+                    .font(.subheadline.bold())
                 if item.originalPrice != item.price {
                     Text(item.originalPrice, format: .currency(code: "EUR"))
                         .font(.caption)
                         .strikethrough()
-                        .foregroundStyle(.secondary)
                 }
             }
         }
@@ -122,8 +123,10 @@ struct ClothingCardView: View {
         HStack(spacing: 2) {
             Image(systemName: "star.fill")
                 .foregroundStyle(.orange)
+                .font(.caption)
+                .accessibilityHidden(true)
             Text(rating, format: .number.precision(.fractionLength(1)))
+                .font(.caption)
         }
-        .font(.caption)
     }
 }

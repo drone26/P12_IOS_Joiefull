@@ -1,3 +1,10 @@
+//
+//  JoiefullUITests.swift
+//  JoiefullUITests
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import XCTest
 
 final class JoiefullUITests: XCTestCase {
@@ -12,10 +19,13 @@ final class JoiefullUITests: XCTestCase {
 
     @MainActor
     func testRatingFlow() throws {
+        // Given
         let app = XCUIApplication()
+        // When
         app.launch()
 
         let firstCard = app.buttons.firstMatch
+        // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
 
@@ -44,6 +54,7 @@ final class JoiefullUITests: XCTestCase {
 
     @MainActor
     func testLaunchPerformance() throws {
+        // Given
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()
         }

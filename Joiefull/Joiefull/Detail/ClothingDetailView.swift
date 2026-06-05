@@ -1,8 +1,15 @@
+//
+//  ClothingDetailView.swift
+//  ClothingDetailView
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import SwiftUI
 
 struct ClothingDetailView: View {
     @State private var viewModel: ClothingDetailViewModel
-    @Environment(LikesRepository.self) private var likesRepository
+    @Environment(LikesViewModel.self) private var likesViewModel
     private let onSubmit: (@Sendable () async -> Void)?
 
     init(item: ClothingItem, onSubmit: (@Sendable () async -> Void)? = nil) {
@@ -22,7 +29,6 @@ struct ClothingDetailView: View {
                 ratingSection(reviewText: $viewModel.reviewText)
                 reviewsSection
             }
-            .frame(maxWidth: 430)
         }
         .task {
             await viewModel.load()
@@ -38,79 +44,102 @@ struct ClothingDetailView: View {
     }
 
     private var imageSection: some View {
-        AsyncImage(url: item.picture.url) { image in
-            image
-                .resizable()
-                .scaledToFill()
-        } placeholder: {
-            Rectangle()
-                .foregroundStyle(.quaternary)
-                .overlay {
-                    ProgressView()
-                }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 400)
-        .clipShape(.rect(cornerRadius: 16))
-        .frAccessibilityLabel(item.picture.description)
-        .overlay(alignment: .topTrailing) {
-            CustomShareButton(item: item)
-                .padding(12)
-        }
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                likesRepository.toggleLike(for: item.id)
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: likesRepository.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
-                        .foregroundStyle(likesRepository.isLiked(clothingId: item.id) ? .red : .primary)
-                    Text("\(likesRepository.likesCount(for: item.id))")
-                        .foregroundStyle(.primary)
-                }
-                .font(.title3)
-                .bold()
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(.ultraThinMaterial, in: .capsule)
+        HStack {
+            Spacer(minLength: 0)
+            AsyncImage(url: item.picture.url) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Rectangle()
+                    .foregroundStyle(.quaternary)
+                    .overlay {
+                        ProgressView()
+                    }
             }
-            .buttonStyle(.plain)
-            .padding(12)
-            .accessibilityElement(children: .ignore)
-            .frAccessibilityLabel(likesRepository.isLiked(clothingId: item.id) ? "Retirer des favoris, \(likesRepository.likesCount(for: item.id)) j'aime" : "Ajouter aux favoris, \(likesRepository.likesCount(for: item.id)) j'aime")
-            .accessibilityAddTraits(.isButton)
+            .aspectRatio(180.0 / 200.0, contentMode: .fit)
+            .frame(maxHeight: 350)
+            .clipped()
+            .clipShape(.rect(cornerRadius: 16))
+            .frAccessibilityLabel(item.picture.description)
+            .overlay(alignment: .topTrailing) {
+                CustomShareButton(item: item)
+                    .padding(12)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                Button {
+                    Task { await likesViewModel.toggleLike(for: item.id) }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: likesViewModel.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
+                            .foregroundStyle(likesViewModel.isLiked(clothingId: item.id) ? .red : .primary)
+                            .font(.title3.bold())
+                            .accessibilityHidden(true)
+                        Text("\(likesViewModel.likesCount(for: item.id))")
+                            .foregroundStyle(.primary)
+                            .font(.title3.bold())
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.regularMaterial, in: .capsule)
+                }
+                .buttonStyle(.plain)
+                .padding(12)
+                .accessibilityElement(children: .ignore)
+                .frAccessibilityLabel(likesViewModel.isLiked(clothingId: item.id) ? "Retirer des favoris, \(likesViewModel.likesCount(for: item.id)) j'aime" : "Ajouter aux favoris, \(likesViewModel.likesCount(for: item.id)) j'aime")
+                .accessibilityAddTraits(.isButton)
+            }
+            Spacer(minLength: 0)
         }
         .padding(.horizontal)
     }
 
     private var infoSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
-                    .font(.title2)
-                    .bold()
-                    .accessibilityAddTraits(.isHeader)
-                Text(item.price, format: .currency(code: "EUR"))
-                    .font(.title3)
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.orange)
-                    Text(viewModel.averageRating, format: .number.precision(.fractionLength(1)))
+        ViewThatFits(in: .horizontal) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.name)
+                        .font(.title2.bold())
+                        .accessibilityAddTraits(.isHeader)
+                    Text(item.price, format: .currency(code: "EUR"))
+                        .font(.title3)
                 }
-                .font(.title3)
-                .accessibilityElement(children: .ignore)
-                .frAccessibilityLabel("Note moyenne \(String(format: "%.1f", viewModel.averageRating)) sur 5")
-                if item.originalPrice != item.price {
-                    Text(item.originalPrice, format: .currency(code: "EUR"))
-                        .strikethrough()
-                        .foregroundStyle(.secondary)
-                        .frAccessibilityLabel("Ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
+                Spacer()
+                ratingAndPriceTrailing
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                Text(item.name)
+                    .font(.title2.bold())
+                    .accessibilityAddTraits(.isHeader)
+                HStack {
+                    Text(item.price, format: .currency(code: "EUR"))
+                        .font(.title3)
+                    Spacer()
+                    ratingAndPriceTrailing
                 }
             }
         }
         .padding(.horizontal)
+    }
+
+    private var ratingAndPriceTrailing: some View {
+        VStack(alignment: .trailing, spacing: 4) {
+            HStack(spacing: 4) {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(.orange)
+                    .font(.title3)
+                    .accessibilityHidden(true)
+                Text(viewModel.averageRating, format: .number.precision(.fractionLength(1)))
+                    .font(.title3)
+            }
+            .accessibilityElement(children: .ignore)
+            .frAccessibilityLabel("Note moyenne \(String(format: "%.1f", viewModel.averageRating)) sur 5")
+            if item.originalPrice != item.price {
+                Text(item.originalPrice, format: .currency(code: "EUR"))
+                    .strikethrough()
+                    .frAccessibilityLabel("Ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
+            }
+        }
     }
 
     private var descriptionSection: some View {
@@ -126,24 +155,27 @@ struct ClothingDetailView: View {
                 UserAvatar(url: viewModel.currentUser?.avatarURL, size: 40)
                     .accessibilityHidden(true)
 
-                HStack(spacing: 4) {
-                    ForEach(1...5, id: \.self) { star in
-                        Button {
-                            viewModel.userRating = star
-                        } label: {
-                            Image(systemName: star <= viewModel.userRating ? "star.fill" : "star")
-                                .foregroundStyle(star <= viewModel.userRating ? .orange : .gray)
-                                .font(.title2)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 4) {
+                        ForEach(1...5, id: \.self) { star in
+                            Button {
+                                viewModel.userRating = star
+                            } label: {
+                                Image(systemName: star <= viewModel.userRating ? "star.fill" : "star")
+                                    .foregroundStyle(star <= viewModel.userRating ? .orange : .gray)
+                                    .font(.title2)
+                                    .accessibilityHidden(true)
+                            }
+                            .buttonStyle(.plain)
+                            .frAccessibilityLabel(starLabel(for: star))
+                            .accessibilityAddTraits(star == viewModel.userRating ? [.isButton, .isSelected] : .isButton)
                         }
-                        .buttonStyle(.plain)
-
-                        .frAccessibilityLabel(starLabel(for: star))
-                        .accessibilityAddTraits(star == viewModel.userRating ? [.isButton, .isSelected] : .isButton)
                     }
                 }
             }
 
             TextField("Partagez ici vos impressions sur cet article", text: reviewText, axis: .vertical)
+                .font(.body)
                 .lineLimit(3...6)
                 .textFieldStyle(.roundedBorder)
                 .frAccessibilityLabel("Votre avis")
@@ -184,14 +216,14 @@ private struct ReviewRow: View {
                 UserAvatar(url: author?.avatarURL, size: 28)
                     .accessibilityHidden(true)
                 Text(author?.fullName ?? "Utilisateur")
-                    .font(.subheadline)
-                    .bold()
+                    .font(.subheadline.bold())
                 Spacer()
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { star in
                         Image(systemName: star <= review.rating ? "star.fill" : "star")
                             .foregroundStyle(star <= review.rating ? .orange : .gray)
                             .font(.caption)
+                            .accessibilityHidden(true)
                     }
                 }
             }
@@ -206,7 +238,7 @@ private struct ReviewRow: View {
 }
 private struct UserAvatar: View {
     let url: URL?
-    let size: CGFloat
+    @ScaledMetric var size: CGFloat
 
     var body: some View {
         Group {
@@ -249,8 +281,10 @@ private struct CustomShareButton: View {
         } label: {
             Image(systemName: "square.and.arrow.up")
                 .font(.title3)
+                .foregroundStyle(.primary)
                 .padding(10)
-                .background(.ultraThinMaterial, in: .circle)
+                .background(.regularMaterial, in: .circle)
+                .accessibilityHidden(true)
                 .frAccessibilityLabel("Partager cet article")
         }
         .sheet(isPresented: $showCommentSheet) {
@@ -258,6 +292,7 @@ private struct CustomShareButton: View {
                 Form {
                     Section("Votre commentaire") {
                         TextField("Ajouter un commentaire personnalisé...", text: $customComment, axis: .vertical)
+                            .font(.body)
                             .lineLimit(3...6)
                             .frAccessibilityLabel("Commentaire personnalisé pour le partage")
                             .frAccessibilityHint("Ce texte sera ajouté à votre partage")
@@ -273,7 +308,10 @@ private struct CustomShareButton: View {
                         } label: {
                             HStack {
                                 Image(systemName: "square.and.arrow.up")
+                                    .font(.body)
+                                    .accessibilityHidden(true)
                                 Text("Partage")
+                                    .font(.body)
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
                         }

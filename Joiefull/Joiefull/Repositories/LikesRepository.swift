@@ -1,47 +1,44 @@
+//
+//  LikesRepository.swift
+//  LikesRepository
+//
+//  Created by Mathieu ARRIO on 13/05/2026.
+//
+
 import Foundation
 import Observation
 
-@Observable
-final class LikesRepository: @unchecked Sendable {
+protocol LikesRepositoryProtocol: Sendable {
+    func fetchLikes() async throws -> [Like]
+    func toggleLike(for clothingId: Int, userId: Int) async
+}
+
+actor LikesRepository: LikesRepositoryProtocol {
     static let shared = LikesRepository()
     
     private let apiService: APIService
-    private(set) var likes: [Like] = []
-    
-    // For now, let's use a static user ID since auth isn't fully implemented
-    var currentUserId: Int = 2
+    private var cachedLikes: [Like]?
     
     init(apiService: APIService = APIService()) {
         self.apiService = apiService
     }
     
-    func loadLikes() async {
-        do {
-            let fetchedLikes: [Like] = try await apiService.request(Endpoint.fetchLikes)
-            await MainActor.run {
-                self.likes = fetchedLikes
-            }
-        } catch {
-            print("Error fetching likes: \(error)")
-        }
+    func fetchLikes() async throws -> [Like] {
+        if let cachedLikes { return cachedLikes }
+        let likes: [Like] = try await apiService.request(Endpoint.fetchLikes)
+        cachedLikes = likes
+        return likes
     }
     
-    func toggleLike(for clothingId: Int) {
-        if let index = likes.firstIndex(where: { $0.clothingId == clothingId && $0.userId == currentUserId }) {
-            likes.remove(at: index)
+    func toggleLike(for clothingId: Int, userId: Int) {
+        var currentLikes = cachedLikes ?? []
+        if let index = currentLikes.firstIndex(where: { $0.clothingId == clothingId && $0.userId == userId }) {
+            currentLikes.remove(at: index)
         } else {
-            let newId = (likes.map { $0.id }.max() ?? 0) + 1
-            let newLike = Like(id: newId, clothingId: clothingId, userId: currentUserId)
-            likes.append(newLike)
+            let newId = (currentLikes.map { $0.id }.max() ?? 0) + 1
+            currentLikes.append(Like(id: newId, clothingId: clothingId, userId: userId))
         }
-    }
-    
-    func isLiked(clothingId: Int) -> Bool {
-        likes.contains(where: { $0.clothingId == clothingId && $0.userId == currentUserId })
-    }
-    
-    func likesCount(for clothingId: Int) -> Int {
-        likes.filter { $0.clothingId == clothingId }.count
+        cachedLikes = currentLikes
     }
     
     private enum Endpoint: APIEndpoint {

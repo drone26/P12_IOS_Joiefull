@@ -82,11 +82,14 @@ final class CatalogViewModelTests: XCTestCase {
     // MARK: - Initial state
 
     func test_init_setsEmptyDefaultState() {
+        // Given
         let viewModel = CatalogViewModel(
             clothesRepository: FakeClothesRepository(),
             reviewRepository: FakeReviewRepository()
         )
+        // When
 
+        // Then
         XCTAssertTrue(viewModel.clothesByCategory.isEmpty)
         XCTAssertTrue(viewModel.averagesByItemID.isEmpty)
         XCTAssertFalse(viewModel.isLoading)
@@ -96,16 +99,20 @@ final class CatalogViewModelTests: XCTestCase {
     // MARK: - averageRating(for:)
 
     func test_averageRating_returnsFallbackFromItem_whenNoOverridePresent() {
+        // Given
         let viewModel = CatalogViewModel(
             clothesRepository: FakeClothesRepository(),
             reviewRepository: FakeReviewRepository()
         )
         let item = makeItem(id: 0)
+        // When
 
+        // Then
         XCTAssertEqual(viewModel.averageRating(for: item), item.rating, accuracy: .ulpOfOne)
     }
 
     func test_averageRating_returnsAveragedValue_whenOverridePresent() async {
+        // Given
         let clothes = FakeClothesRepository()
         clothes.result = .success([makeItem(id: 5)])
         let reviews = FakeReviewRepository()
@@ -115,14 +122,17 @@ final class CatalogViewModelTests: XCTestCase {
         ])
         let viewModel = CatalogViewModel(clothesRepository: clothes, reviewRepository: reviews)
 
+        // When
         await viewModel.loadClothes()
 
+        // Then
         XCTAssertEqual(viewModel.averageRating(for: makeItem(id: 5)), 3.0, accuracy: .ulpOfOne)
     }
 
     // MARK: - loadClothes()
 
     func test_loadClothes_groupsItemsByCategory_onSuccess() async {
+        // Given
         let clothes = FakeClothesRepository()
         clothes.result = .success([
             makeItem(id: 1, category: .tops),
@@ -134,8 +144,10 @@ final class CatalogViewModelTests: XCTestCase {
             reviewRepository: FakeReviewRepository()
         )
 
+        // When
         await viewModel.loadClothes()
 
+        // Then
         XCTAssertEqual(viewModel.clothesByCategory[.tops]?.count, 2)
         XCTAssertEqual(viewModel.clothesByCategory[.shoes]?.count, 1)
         XCTAssertNil(viewModel.clothesByCategory[.bottoms])
@@ -144,6 +156,7 @@ final class CatalogViewModelTests: XCTestCase {
     }
 
     func test_loadClothes_setsErrorMessage_whenClothesFetchFails() async {
+        // Given
         let clothes = FakeClothesRepository()
         clothes.result = .failure(APIError.networkError)
         let viewModel = CatalogViewModel(
@@ -151,28 +164,34 @@ final class CatalogViewModelTests: XCTestCase {
             reviewRepository: FakeReviewRepository()
         )
 
+        // When
         await viewModel.loadClothes()
 
+        // Then
         XCTAssertEqual(viewModel.errorMessage, APIError.networkError.errorDescription)
         XCTAssertTrue(viewModel.clothesByCategory.isEmpty)
         XCTAssertFalse(viewModel.isLoading)
     }
 
     func test_loadClothes_ignoresReviewFailure_andKeepsClothesLoaded() async {
+        // Given
         let clothes = FakeClothesRepository()
         clothes.result = .success([makeItem(id: 1, category: .tops)])
         let reviews = FakeReviewRepository()
         reviews.result = .failure(APIError.networkError)
         let viewModel = CatalogViewModel(clothesRepository: clothes, reviewRepository: reviews)
 
+        // When
         await viewModel.loadClothes()
 
+        // Then
         XCTAssertEqual(viewModel.clothesByCategory[.tops]?.count, 1)
         XCTAssertNil(viewModel.errorMessage, "Review failure should not surface as an error when clothes load successfully")
         XCTAssertTrue(viewModel.averagesByItemID.isEmpty)
     }
 
     func test_loadClothes_populatesAveragesByItemID_fromReviews() async {
+        // Given
         let clothes = FakeClothesRepository()
         clothes.result = .success([makeItem(id: 7)])
         let reviews = FakeReviewRepository()
@@ -182,12 +201,15 @@ final class CatalogViewModelTests: XCTestCase {
         ])
         let viewModel = CatalogViewModel(clothesRepository: clothes, reviewRepository: reviews)
 
+        // When
         await viewModel.loadClothes()
 
+        // Then
         XCTAssertEqual(viewModel.averagesByItemID[7]!, 4.0, accuracy: .ulpOfOne)
     }
 
     func test_loadClothes_resetsLoadingAndClearsPreviousErrorOnSecondCall() async {
+        // Given
         let clothes = FakeClothesRepository()
         clothes.result = .failure(APIError.networkError)
         let viewModel = CatalogViewModel(
@@ -195,7 +217,9 @@ final class CatalogViewModelTests: XCTestCase {
             reviewRepository: FakeReviewRepository()
         )
 
+        // When
         await viewModel.loadClothes()
+        // Then
         XCTAssertNotNil(viewModel.errorMessage)
 
         clothes.result = .success([makeItem(id: 1, category: .bottoms)])
@@ -209,6 +233,7 @@ final class CatalogViewModelTests: XCTestCase {
     // MARK: - refreshAverages()
 
     func test_refreshAverages_replacesAverages_onSuccess() async {
+        // Given
         let reviews = FakeReviewRepository()
         reviews.result = .success([
             makeReview(id: 1, clothingId: 1, userId: 1, rating: 5),
@@ -218,7 +243,9 @@ final class CatalogViewModelTests: XCTestCase {
             clothesRepository: FakeClothesRepository(),
             reviewRepository: reviews
         )
+        // When
         await viewModel.loadClothes()
+        // Then
         XCTAssertEqual(viewModel.averagesByItemID[1]!, 4.0, accuracy: .ulpOfOne)
 
         reviews.result = .success([makeReview(id: 3, clothingId: 2, userId: 1, rating: 4)])
@@ -230,6 +257,7 @@ final class CatalogViewModelTests: XCTestCase {
     }
 
     func test_refreshAverages_keepsExistingAverages_whenFetchFails() async {
+        // Given
         let reviews = FakeReviewRepository()
         reviews.result = .success([
             makeReview(id: 1, clothingId: 1, userId: 1, rating: 5)
@@ -238,7 +266,9 @@ final class CatalogViewModelTests: XCTestCase {
             clothesRepository: FakeClothesRepository(),
             reviewRepository: reviews
         )
+        // When
         await viewModel.loadClothes()
+        // Then
         XCTAssertEqual(viewModel.averagesByItemID[1]!, 5.0, accuracy: .ulpOfOne)
 
         reviews.result = .failure(APIError.networkError)
