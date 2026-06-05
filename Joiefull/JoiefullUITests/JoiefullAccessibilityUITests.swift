@@ -26,7 +26,10 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testCatalog_categoryHeaders_areExposed() {
+        // Given
+        // When
         let hauts = app.staticTexts["Hauts"]
+        // Then
         XCTAssertTrue(hauts.waitForExistence(timeout: 10), "Category heading 'Hauts' should be in the accessibility tree")
         XCTAssertTrue(app.staticTexts["Bas"].exists)
         XCTAssertTrue(app.staticTexts["Chaussures"].exists)
@@ -35,7 +38,10 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testCatalog_card_isSingleAccessibleButton_withCombinedLabel() {
+        // Given
+        // When
         let firstCard = app.buttons.firstMatch
+        // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
 
         let label = firstCard.label
@@ -48,17 +54,23 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testDetail_shareButton_isLabeledInFrench() {
+        // Given
         openFirstDetail()
 
+        // When
         let share = app.buttons["Partager cet article"]
+        // Then
         XCTAssertTrue(share.waitForExistence(timeout: 5), "Share button should be labeled 'Partager cet article'")
     }
 
     @MainActor
     func testDetail_shareCommentSheet_hasAccessibleElements() {
+        // Given
         openFirstDetail()
         
+        // When
         let share = app.buttons["Partager cet article"]
+        // Then
         XCTAssertTrue(share.waitForExistence(timeout: 5))
         share.tap()
         
@@ -77,39 +89,72 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testDetail_likesBadge_isAnnouncedInFrench() {
+        // Given
         openFirstDetail()
 
         let predicate = NSPredicate(format: "label CONTAINS[c] %@ AND label CONTAINS[c] %@", "aime", "favoris")
+        // When
         let likes = app.descendants(matching: .any).matching(predicate).firstMatch
+        // Then
         XCTAssertTrue(likes.waitForExistence(timeout: 5), "Likes badge should expose a label containing 'aime' and 'favoris'")
     }
 
     @MainActor
+    func testDetail_likeButton_tapTogglesLike() {
+        // Given
+        openFirstDetail()
+
+        let predicate = NSPredicate(format: "label CONTAINS[c] %@ AND label CONTAINS[c] %@", "aime", "favoris")
+        // When
+        let likeButton = app.buttons.matching(predicate).firstMatch
+        // Then
+        XCTAssertTrue(likeButton.waitForExistence(timeout: 5))
+        
+        let initialLabel = likeButton.label
+        likeButton.tap()
+        
+        // Wait briefly for UI update
+        sleep(1)
+        
+        let newLabel = likeButton.label
+        XCTAssertNotEqual(initialLabel, newLabel, "Tapping the like button should change its accessibility label")
+    }
+
+    @MainActor
     func testDetail_averageRating_hasFrenchAccessibilityLabel() {
+        // Given
         openFirstDetail()
 
         let predicate = NSPredicate(format: "label BEGINSWITH %@", "Note moyenne")
+        // When
         let avg = app.descendants(matching: .any).matching(predicate).firstMatch
+        // Then
         XCTAssertTrue(avg.waitForExistence(timeout: 5), "Average rating should be labeled 'Note moyenne X.X sur 5'")
     }
 
     @MainActor
     func testDetail_starButtons_areIndividuallyAccessible() {
+        // Given
         openFirstDetail()
 
         for star in 1...5 {
             let plural = star > 1 ? "s" : ""
             let expected = "Noter \(star) étoile\(plural)"
+        // When
             let button = app.buttons[expected]
+        // Then
             XCTAssertTrue(button.waitForExistence(timeout: 5), "Missing accessible star button '\(expected)'")
         }
     }
 
     @MainActor
     func testDetail_starButton_tapMarksAsSelected() {
+        // Given
         openFirstDetail()
 
+        // When
         let third = app.buttons["Noter 3 étoiles"]
+        // Then
         XCTAssertTrue(third.waitForExistence(timeout: 5))
         third.tap()
 
@@ -118,48 +163,63 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testDetail_reviewField_hasFrenchLabel() {
+        // Given
         openFirstDetail()
 
+        // When
         let field = app.textFields["Votre avis"]
+        // Then
         XCTAssertTrue(field.waitForExistence(timeout: 5), "Review text field should be labeled 'Votre avis'")
     }
 
     @MainActor
     func testDetail_reviewsHeader_isExposed() {
+        // Given
         openFirstDetail()
 
         let predicate = NSPredicate(format: "label BEGINSWITH 'Avis ('")
+        // When
         let header = app.staticTexts.matching(predicate).firstMatch
+        // Then
         XCTAssertTrue(header.waitForExistence(timeout: 5), "Reviews section heading 'Avis (N)' should exist")
     }
 
     @MainActor
     func testDetail_image_exposesFrenchPictureDescription() {
+        // Given
         openFirstDetail()
 
         // The first TOPS card is "Blazer marron". Its picture description
         // ("Homme en costume et veste de blazer…") is exposed both as the
         // image's accessibility label and as a description text.
         let predicate = NSPredicate(format: "label CONTAINS[c] %@", "costume et veste de blazer")
+        // When
         let described = app.descendants(matching: .any).matching(predicate).firstMatch
+        // Then
         XCTAssertTrue(described.waitForExistence(timeout: 5),
                       "Picture description should be exposed to VoiceOver in the detail view")
     }
 
     @MainActor
     func testDetail_productName_isExposedAsAccessibleText() {
+        // Given
         openFirstDetail()
 
+        // When
         let name = app.staticTexts["Blazer marron"]
+        // Then
         XCTAssertTrue(name.waitForExistence(timeout: 5),
                       "Product name should be exposed to VoiceOver as accessible text")
     }
 
     @MainActor
     func testDetail_reviewField_exposesFrenchPlaceholder() {
+        // Given
         openFirstDetail()
 
+        // When
         let field = app.textFields["Votre avis"]
+        // Then
         XCTAssertTrue(field.waitForExistence(timeout: 5))
 
         let placeholder = field.placeholderValue ?? ""
@@ -169,11 +229,14 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testDetail_starButtons_initiallyNoneSelected() {
+        // Given
         openFirstDetail()
 
         for star in 1...5 {
             let plural = star > 1 ? "s" : ""
+        // When
             let button = app.buttons["Noter \(star) étoile\(plural)"]
+        // Then
             XCTAssertTrue(button.waitForExistence(timeout: 5))
             XCTAssertFalse(button.isSelected,
                            "Star \(star) should not be selected before the user taps any rating")
@@ -182,10 +245,13 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testDetail_starButton_selectionMovesBetweenStars() {
+        // Given
         openFirstDetail()
 
         let second = app.buttons["Noter 2 étoiles"]
+        // When
         let fourth = app.buttons["Noter 4 étoiles"]
+        // Then
         XCTAssertTrue(second.waitForExistence(timeout: 5))
 
         second.tap()
@@ -199,18 +265,22 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     func testDetail_originalPrice_hasFrenchAccessibilityLabel_whenDiscounted() {
+        // Given
         // "Pull vert femme" is discounted (29.99 vs 39.99) and exposes
         // an "Ancien prix …" accessibility label for VoiceOver.
         openCard(labelContaining: "Pull vert femme")
 
         let predicate = NSPredicate(format: "label BEGINSWITH %@", "Ancien prix")
+        // When
         let oldPrice = app.descendants(matching: .any).matching(predicate).firstMatch
+        // Then
         XCTAssertTrue(oldPrice.waitForExistence(timeout: 5),
                       "Discounted item should expose an 'Ancien prix' accessibility label")
     }
 
     @MainActor
     func testDetail_reviewRow_hasCombinedFrenchAccessibilityLabel() {
+        // Given
         openFirstDetail()
 
         // Each review row uses `.accessibilityElement(children: .ignore)` and
@@ -219,7 +289,9 @@ final class JoiefullAccessibilityUITests: XCTestCase {
             format: "label CONTAINS[c] %@ AND label CONTAINS[c] %@",
             "étoile", "sur 5"
         )
+        // When
         let review = app.descendants(matching: .any).matching(predicate).firstMatch
+        // Then
         XCTAssertTrue(review.waitForExistence(timeout: 10),
                       "Review row should be exposed as a single VoiceOver element combining author, rating and text")
     }

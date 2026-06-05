@@ -29,9 +29,12 @@ final class CustomShareButtonUITests: XCTestCase {
 
     @MainActor
     func testShareButton_opensCommentSheet_andCanBeCanceled() {
+        // Given
         openFirstDetail()
         
+        // When
         let shareButton = app.buttons["Partager cet article"]
+        // Then
         XCTAssertTrue(shareButton.waitForExistence(timeout: 5))
         shareButton.tap()
         
@@ -45,9 +48,12 @@ final class CustomShareButtonUITests: XCTestCase {
     
     @MainActor
     func testShareButton_opensCommentSheet_typesComment_andProceedsToShareSheet() {
+        // Given
         openFirstDetail()
         
+        // When
         let shareButton = app.buttons["Partager cet article"]
+        // Then
         XCTAssertTrue(shareButton.waitForExistence(timeout: 5))
         shareButton.tap()
         
