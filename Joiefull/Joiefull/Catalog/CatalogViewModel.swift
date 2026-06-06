@@ -26,7 +26,7 @@ final class CatalogViewModel {
     }
 
     func averageRating(for item: ClothingItem) -> Double {
-        averagesByItemID[item.id] ?? item.rating
+        averagesByItemID[item.id] ?? 0.0
     }
 
     func loadClothes() async {
