@@ -9,6 +9,7 @@ import Foundation
 import Testing
 @testable import Joiefull
 
+@MainActor
 struct ClothingItemTests {
 
     @Test func decode_fromAPIJSON_mapsSnakeCaseKeys() throws {
