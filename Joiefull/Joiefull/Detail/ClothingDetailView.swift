@@ -185,12 +185,16 @@ struct ClothingDetailView: View {
                 }
             }
 
-            TextField("Partagez ici vos impressions sur cet article", text: reviewText, axis: .vertical)
+            TextField(
+                "",
+                text: reviewText,
+                prompt: Text(frenchAttributed("Partagez ici vos impressions sur cet article")),
+                axis: .vertical
+            )
                 .font(.body)
                 .lineLimit(3...6)
                 .textFieldStyle(JoiefullTextFieldStyle())
                 .frAccessibilityLabel("Votre avis")
-                .frAccessibilityHint("Partagez ici vos impressions sur cet article")
         }
         .padding(.horizontal)
     }
@@ -207,6 +211,7 @@ struct ClothingDetailView: View {
                 Text("Avis (\(viewModel.itemReviews.count))")
                     .font(.headline)
                     .accessibilityAddTraits(.isHeader)
+                    .frAccessibilityLabel("Avis (\(viewModel.itemReviews.count))")
 
                 ForEach(viewModel.itemReviews) { review in
                     ReviewRow(review: review, author: viewModel.user(for: review))
