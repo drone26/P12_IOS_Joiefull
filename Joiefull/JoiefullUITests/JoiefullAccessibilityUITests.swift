@@ -40,7 +40,7 @@ final class JoiefullAccessibilityUITests: XCTestCase {
     func testCatalog_card_isSingleAccessibleButton_withCombinedLabel() {
         // Given
         // When
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
 
@@ -300,7 +300,7 @@ final class JoiefullAccessibilityUITests: XCTestCase {
 
     @MainActor
     private func openFirstDetail() {
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
     }

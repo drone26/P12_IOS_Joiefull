@@ -22,7 +22,7 @@ final class CustomShareButtonUITests: XCTestCase {
     }
 
     private func openFirstDetail() {
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
     }

@@ -26,7 +26,7 @@ final class FavoritesUITests: XCTestCase {
     func testFavorites_canAddAndRemoveFromCatalog() {
         // Given
         // When
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
         
