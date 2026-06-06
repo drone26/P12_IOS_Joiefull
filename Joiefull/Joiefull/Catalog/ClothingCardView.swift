@@ -8,14 +8,11 @@
 import SwiftUI
 
 struct ClothingCardView: View {
-    let item: ClothingItem
-    let rating: Double
+    let viewModel: ClothingCardViewModel
     var isSelected = false
-    
-    @Environment(LikesViewModel.self) private var likesViewModel
 
-    @ScaledMetric private var cardWidth: CGFloat = 180
-    @ScaledMetric private var imageHeight: CGFloat = 200
+    @ScaledMetric private var cardWidth: CGFloat = 198
+    @ScaledMetric private var imageHeight: CGFloat = 198
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -31,34 +28,15 @@ struct ClothingCardView: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .frAccessibilityLabel(accessibilityDescription)
+        .frAccessibilityLabel(viewModel.accessibilityDescription)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-        .accessibilityAction(named: likesViewModel.isLiked(clothingId: item.id) ? "Retirer des favoris" : "Ajouter aux favoris") {
-            Task { await likesViewModel.toggleLike(for: item.id) }
+        .accessibilityAction(named: viewModel.isLiked ? "Retirer des favoris" : "Ajouter aux favoris") {
+            Task { await viewModel.toggleLike() }
         }
-    }
-
-    private var accessibilityDescription: String {
-        let ratingText = String(format: "%.1f", rating)
-        let priceText = item.price.formatted(.currency(code: "EUR"))
-        var parts = [
-            item.name,
-            item.picture.description,
-            "noté \(ratingText) sur 5",
-            "prix \(priceText)"
-        ]
-        if item.originalPrice != item.price {
-            parts.append("ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
-        }
-        if likesViewModel.isLiked(clothingId: item.id) {
-            parts.append("Favori")
-        }
-        parts.append("\(likesViewModel.likesCount(for: item.id)) jaime")
-        return parts.joined(separator: ", ")
     }
 
     private var imageSection: some View {
-        AsyncImage(url: item.picture.url) { image in
+        AsyncImage(url: viewModel.item.picture.url) { image in
             image
                 .resizable()
                 .scaledToFill()
@@ -78,14 +56,14 @@ struct ClothingCardView: View {
 
     private var likeBadge: some View {
         Button {
-            Task { await likesViewModel.toggleLike(for: item.id) }
+            Task { await viewModel.toggleLike() }
         } label: {
             HStack(spacing: 4) {
-                Image(systemName: likesViewModel.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
-                    .foregroundStyle(likesViewModel.isLiked(clothingId: item.id) ? .red : .primary)
+                Image(systemName: viewModel.isLiked ? "heart.fill" : "heart")
+                    .foregroundStyle(viewModel.isLiked ? .red : .primary)
                     .font(.caption.bold())
                     .accessibilityHidden(true)
-                Text("\(likesViewModel.likesCount(for: item.id))")
+                Text("\(viewModel.likesCount)")
                     .foregroundStyle(.primary)
                     .font(.caption.bold())
             }
@@ -100,20 +78,23 @@ struct ClothingCardView: View {
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .top) {
-                Text(item.name)
+                Text(viewModel.item.name)
                     .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 ratingLabel
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
             HStack {
-                Text(item.price, format: .currency(code: "EUR"))
+                Text(viewModel.formattedPrice)
                     .font(.subheadline.bold())
-                if item.originalPrice != item.price {
-                    Text(item.originalPrice, format: .currency(code: "EUR"))
+                    .fixedSize(horizontal: false, vertical: true)
+                if let oldPrice = viewModel.formattedOriginalPrice {
+                    Text(oldPrice)
                         .font(.caption)
                         .strikethrough()
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
@@ -125,7 +106,7 @@ struct ClothingCardView: View {
                 .foregroundStyle(.orange)
                 .font(.caption)
                 .accessibilityHidden(true)
-            Text(rating, format: .number.precision(.fractionLength(1)))
+            Text(viewModel.formattedRating)
                 .font(.caption)
         }
     }

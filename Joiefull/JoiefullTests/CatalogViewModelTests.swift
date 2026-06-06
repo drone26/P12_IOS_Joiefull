@@ -108,7 +108,7 @@ final class CatalogViewModelTests: XCTestCase {
         // When
 
         // Then
-        XCTAssertEqual(viewModel.averageRating(for: item), item.rating, accuracy: .ulpOfOne)
+        XCTAssertEqual(viewModel.averageRating(for: item), 0.0, accuracy: .ulpOfOne)
     }
 
     func test_averageRating_returnsAveragedValue_whenOverridePresent() async {
@@ -276,5 +276,106 @@ final class CatalogViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.averagesByItemID[1]!, 5.0, accuracy: .ulpOfOne,
                        "Existing averages should be preserved when a refresh fails")
+    }
+}
+
+final class ClothingCardViewModelTests: XCTestCase {
+
+    func testFormattedRating() {
+        let item = ClothingItem(
+            id: 1,
+            picture: .init(url: URL(string: "https://example.com")!, description: "desc"),
+            name: "Test",
+            category: .tops,
+            price: 10.0,
+            originalPrice: 10.0
+        )
+        let viewModel = ClothingCardViewModel(item: item, rating: 4.5, likesCount: 0, isLiked: false, toggleLike: {})
+        
+        XCTAssertEqual(viewModel.formattedRating, "4,5", "La note doit être formatée avec un chiffre après la virgule (selon la locale FR).")
+    }
+    
+    func testFormattedPrice() {
+        let item = ClothingItem(
+            id: 1,
+            picture: .init(url: URL(string: "https://example.com")!, description: "desc"),
+            name: "Test",
+            category: .tops,
+            price: 19.99,
+            originalPrice: 19.99
+        )
+        let viewModel = ClothingCardViewModel(item: item, rating: 4.0, likesCount: 0, isLiked: false, toggleLike: {})
+        
+        let formatted = viewModel.formattedPrice
+        XCTAssertTrue(formatted.contains("19,99") || formatted.contains("19.99"))
+        XCTAssertTrue(formatted.contains("€") || formatted.contains("EUR"))
+    }
+    
+    func testFormattedOriginalPrice_whenDifferent() {
+        let item = ClothingItem(
+            id: 1,
+            picture: .init(url: URL(string: "https://example.com")!, description: "desc"),
+            name: "Test",
+            category: .tops,
+            price: 10.0,
+            originalPrice: 20.0
+        )
+        let viewModel = ClothingCardViewModel(item: item, rating: 4.0, likesCount: 0, isLiked: false, toggleLike: {})
+        
+        let formatted = viewModel.formattedOriginalPrice
+        XCTAssertNotNil(formatted)
+        XCTAssertTrue(formatted!.contains("20"))
+    }
+    
+    func testFormattedOriginalPrice_whenSame_returnsNil() {
+        let item = ClothingItem(
+            id: 1,
+            picture: .init(url: URL(string: "https://example.com")!, description: "desc"),
+            name: "Test",
+            category: .tops,
+            price: 10.0,
+            originalPrice: 10.0
+        )
+        let viewModel = ClothingCardViewModel(item: item, rating: 4.0, likesCount: 0, isLiked: false, toggleLike: {})
+        
+        XCTAssertNil(viewModel.formattedOriginalPrice)
+    }
+    
+    func testAccessibilityDescription_notLiked_noDiscount() {
+        let item = ClothingItem(
+            id: 1,
+            picture: .init(url: URL(string: "https://example.com")!, description: "Une belle chemise"),
+            name: "Chemise",
+            category: .tops,
+            price: 15.0,
+            originalPrice: 15.0
+        )
+        let viewModel = ClothingCardViewModel(item: item, rating: 4.2, likesCount: 10, isLiked: false, toggleLike: {})
+        
+        let desc = viewModel.accessibilityDescription
+        XCTAssertTrue(desc.contains("Chemise"))
+        XCTAssertTrue(desc.contains("Une belle chemise"))
+        XCTAssertTrue(desc.contains("noté 4.2 sur 5") || desc.contains("noté 4,2 sur 5"))
+        XCTAssertTrue(desc.contains("prix"))
+        XCTAssertFalse(desc.contains("ancien prix"))
+        XCTAssertFalse(desc.contains("Favori"))
+        XCTAssertTrue(desc.contains("10 jaime"))
+    }
+    
+    func testAccessibilityDescription_liked_withDiscount() {
+        let item = ClothingItem(
+            id: 1,
+            picture: .init(url: URL(string: "https://example.com")!, description: "Robe d'été"),
+            name: "Robe",
+            category: .bottoms,
+            price: 20.0,
+            originalPrice: 40.0
+        )
+        let viewModel = ClothingCardViewModel(item: item, rating: 5.0, likesCount: 5, isLiked: true, toggleLike: {})
+        
+        let desc = viewModel.accessibilityDescription
+        XCTAssertTrue(desc.contains("ancien prix"))
+        XCTAssertTrue(desc.contains("Favori"))
+        XCTAssertTrue(desc.contains("5 jaime"))
     }
 }

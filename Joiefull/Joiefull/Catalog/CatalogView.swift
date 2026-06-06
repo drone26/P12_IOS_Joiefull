@@ -10,6 +10,9 @@ import SwiftUI
 struct CatalogView: View {
     let clothesByCategory: [Category: [ClothingItem]]
     let rating: (ClothingItem) -> Double
+    let likesCount: (ClothingItem) -> Int
+    let isLiked: (ClothingItem) -> Bool
+    let toggleLike: (ClothingItem) async -> Void
     let selectedItem: Binding<ClothingItem?>
 
     var body: some View {
@@ -21,6 +24,9 @@ struct CatalogView: View {
                             category: category,
                             items: items,
                             rating: rating,
+                            likesCount: likesCount,
+                            isLiked: isLiked,
+                            toggleLike: toggleLike,
                             selectedItem: selectedItem
                         )
                     }
@@ -34,6 +40,9 @@ private struct CategorySection: View {
     let category: Category
     let items: [ClothingItem]
     let rating: (ClothingItem) -> Double
+    let likesCount: (ClothingItem) -> Int
+    let isLiked: (ClothingItem) -> Bool
+    let toggleLike: (ClothingItem) async -> Void
     let selectedItem: Binding<ClothingItem?>
 
     var body: some View {
@@ -42,6 +51,7 @@ private struct CategorySection: View {
                 .font(.title2.bold())
                 .padding(.horizontal)
                 .accessibilityAddTraits(.isHeader)
+                .fixedSize(horizontal: false, vertical: true)
 
             ScrollView(.horizontal) {
                 HStack(alignment: .top, spacing: 16) {
@@ -50,8 +60,13 @@ private struct CategorySection: View {
                             selectedItem.wrappedValue = item
                         } label: {
                             ClothingCardView(
-                                item: item,
-                                rating: rating(item),
+                                viewModel: ClothingCardViewModel(
+                                    item: item,
+                                    rating: rating(item),
+                                    likesCount: likesCount(item),
+                                    isLiked: isLiked(item),
+                                    toggleLike: { await toggleLike(item) }
+                                ),
                                 isSelected: selectedItem.wrappedValue?.id == item.id
                             )
                         }

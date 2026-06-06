@@ -1,13 +1,13 @@
 //
-//  ClothingCardView.swift
-//  ClothingCardView
+//  ClothingItem.swift
+//  ClothingItem
 //
 //  Created by Mathieu ARRIO on 13/05/2026.
 //
 
 import Foundation
 
-nonisolated struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Sendable {
+struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Sendable {
     let id: Int
     let picture: Picture
     let name: String
@@ -15,10 +15,7 @@ nonisolated struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Se
     let price: Double
     let originalPrice: Double
 
-    var rating: Double {
-        let seed = Double((id * 17 + 13) % 20)
-        return (30.0 + seed) / 10.0
-    }
+
 
     enum CodingKeys: String, CodingKey {
         case id, picture, name, category, price
@@ -26,12 +23,12 @@ nonisolated struct ClothingItem: Codable, Identifiable, nonisolated Hashable, Se
     }
 }
 
-nonisolated struct Picture: Codable, nonisolated Hashable, Sendable {
+struct Picture: Codable, nonisolated Hashable, Sendable {
     let url: URL
     let description: String
 }
 
-nonisolated enum Category: String, Codable, Sendable, CaseIterable {
+enum Category: String, Codable, Sendable, CaseIterable {
     case tops = "TOPS"
     case bottoms = "BOTTOMS"
     case shoes = "SHOES"

@@ -53,24 +53,6 @@ struct ClothingItemTests {
         #expect(decoded == original)
     }
 
-    @Test func rating_computation_isDeterministicForGivenID() {
-        let item0 = makeItem(id: 0)
-        let item1 = makeItem(id: 1)
-        let item11 = makeItem(id: 11)
-
-        // (id * 17 + 13) % 20 + 30 / 10
-        #expect(item0.rating == 4.3)  // 13 % 20 = 13 -> (30+13)/10
-        #expect(item1.rating == 4.0)  // 30 % 20 = 10 -> (30+10)/10
-        #expect(item11.rating == 3.0) // 200 % 20 = 0 -> (30+0)/10
-    }
-
-    @Test func rating_isAlwaysBetween3And4Point9() {
-        for id in 0..<200 {
-            let rating = makeItem(id: id).rating
-            #expect(rating >= 3.0)
-            #expect(rating <= 4.9)
-        }
-    }
 
     @Test func equatable_and_hashable_areBasedOnAllFields() {
         let a = makeItem(id: 1)

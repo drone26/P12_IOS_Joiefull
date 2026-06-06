@@ -22,7 +22,8 @@ struct ContentView: View {
             }
         }
         .environment(\.locale, Locale(identifier: "fr_FR"))
-        .environment(likesViewModel)
+        .onChange(of: likesViewModel.likes) { _, _ in }
+        .onChange(of: viewModel.averagesByItemID) { _, _ in }
     }
 
     private var tabletLayout: some View {
@@ -31,6 +32,9 @@ struct ContentView: View {
                 CatalogView(
                     clothesByCategory: viewModel.clothesByCategory,
                     rating: viewModel.averageRating(for:),
+                    likesCount: { item in likesViewModel.likesCount(for: item.id) },
+                    isLiked: { item in likesViewModel.isLiked(clothingId: item.id) },
+                    toggleLike: { item in await likesViewModel.toggleLike(for: item.id) },
                     selectedItem: $selectedItem
                 )
                 .navigationTitle("Joiefull")
@@ -39,9 +43,15 @@ struct ContentView: View {
 
             if let item = selectedItem {
                 Divider()
-                ClothingDetailView(item: item, onSubmit: { [viewModel] in
-                    await viewModel.refreshAverages()
-                })
+                ClothingDetailView(
+                    item: item,
+                    likesCount: likesViewModel.likesCount(for: item.id),
+                    isLiked: likesViewModel.isLiked(clothingId: item.id),
+                    toggleLike: { await likesViewModel.toggleLike(for: item.id) },
+                    onSubmit: {
+                        await viewModel.refreshAverages()
+                    }
+                )
                     .id(item.id)
                     .frame(maxWidth: .infinity)
                     .transition(.move(edge: .trailing))
@@ -64,13 +74,22 @@ struct ContentView: View {
             CatalogView(
                 clothesByCategory: viewModel.clothesByCategory,
                 rating: viewModel.averageRating(for:),
+                likesCount: { item in likesViewModel.likesCount(for: item.id) },
+                isLiked: { item in likesViewModel.isLiked(clothingId: item.id) },
+                toggleLike: { item in await likesViewModel.toggleLike(for: item.id) },
                 selectedItem: $selectedItem
             )
             .navigationTitle("Joiefull")
             .navigationDestination(item: $selectedItem) { item in
-                ClothingDetailView(item: item, onSubmit: { [viewModel] in
-                    await viewModel.refreshAverages()
-                })
+                ClothingDetailView(
+                    item: item,
+                    likesCount: likesViewModel.likesCount(for: item.id),
+                    isLiked: likesViewModel.isLiked(clothingId: item.id),
+                    toggleLike: { await likesViewModel.toggleLike(for: item.id) },
+                    onSubmit: {
+                        await viewModel.refreshAverages()
+                    }
+                )
             }
         }
         .task {

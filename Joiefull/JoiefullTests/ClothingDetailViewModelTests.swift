@@ -126,7 +126,7 @@ final class ClothingDetailViewModelTests: XCTestCase {
         // When
 
         // Then
-        XCTAssertEqual(viewModel.averageRating, item.rating, accuracy: .ulpOfOne)
+        XCTAssertEqual(viewModel.averageRating, 0.0, accuracy: .ulpOfOne)
     }
 
     func test_averageRating_averagesAllReviews_whenNoUserRating() async {

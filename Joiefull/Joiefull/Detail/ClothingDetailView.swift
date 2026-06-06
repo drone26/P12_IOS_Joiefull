@@ -9,11 +9,16 @@ import SwiftUI
 
 struct ClothingDetailView: View {
     @State private var viewModel: ClothingDetailViewModel
-    @Environment(LikesViewModel.self) private var likesViewModel
+    let likesCount: Int
+    let isLiked: Bool
+    let toggleLike: () async -> Void
     private let onSubmit: (@Sendable () async -> Void)?
 
-    init(item: ClothingItem, onSubmit: (@Sendable () async -> Void)? = nil) {
+    init(item: ClothingItem, likesCount: Int, isLiked: Bool, toggleLike: @escaping () async -> Void, onSubmit: (@Sendable () async -> Void)? = nil) {
         _viewModel = State(initialValue: ClothingDetailViewModel(item: item))
+        self.likesCount = likesCount
+        self.isLiked = isLiked
+        self.toggleLike = toggleLike
         self.onSubmit = onSubmit
     }
 
@@ -57,7 +62,7 @@ struct ClothingDetailView: View {
                         ProgressView()
                     }
             }
-            .aspectRatio(180.0 / 200.0, contentMode: .fit)
+            .aspectRatio(1.0, contentMode: .fit)
             .frame(maxHeight: 350)
             .clipped()
             .clipShape(.rect(cornerRadius: 16))
@@ -68,14 +73,14 @@ struct ClothingDetailView: View {
             }
             .overlay(alignment: .bottomTrailing) {
                 Button {
-                    Task { await likesViewModel.toggleLike(for: item.id) }
+                    Task { await toggleLike() }
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: likesViewModel.isLiked(clothingId: item.id) ? "heart.fill" : "heart")
-                            .foregroundStyle(likesViewModel.isLiked(clothingId: item.id) ? .red : .primary)
+                        Image(systemName: isLiked ? "heart.fill" : "heart")
+                            .foregroundStyle(isLiked ? .red : .primary)
                             .font(.title3.bold())
                             .accessibilityHidden(true)
-                        Text("\(likesViewModel.likesCount(for: item.id))")
+                        Text("\(likesCount)")
                             .foregroundStyle(.primary)
                             .font(.title3.bold())
                     }
@@ -86,7 +91,7 @@ struct ClothingDetailView: View {
                 .buttonStyle(.plain)
                 .padding(12)
                 .accessibilityElement(children: .ignore)
-                .frAccessibilityLabel(likesViewModel.isLiked(clothingId: item.id) ? "Retirer des favoris, \(likesViewModel.likesCount(for: item.id)) j'aime" : "Ajouter aux favoris, \(likesViewModel.likesCount(for: item.id)) j'aime")
+                .frAccessibilityLabel(isLiked ? "Retirer des favoris, \(likesCount) j'aime" : "Ajouter aux favoris, \(likesCount) j'aime")
                 .accessibilityAddTraits(.isButton)
             }
             Spacer(minLength: 0)
@@ -101,8 +106,10 @@ struct ClothingDetailView: View {
                     Text(item.name)
                         .font(.title2.bold())
                         .accessibilityAddTraits(.isHeader)
-                    Text(item.price, format: .currency(code: "EUR"))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(item.price.formatted(.currency(code: "EUR")))
                         .font(.title3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 ratingAndPriceTrailing
@@ -111,9 +118,11 @@ struct ClothingDetailView: View {
                 Text(item.name)
                     .font(.title2.bold())
                     .accessibilityAddTraits(.isHeader)
+                    .fixedSize(horizontal: false, vertical: true)
                 HStack {
-                    Text(item.price, format: .currency(code: "EUR"))
+                    Text(item.price.formatted(.currency(code: "EUR")))
                         .font(.title3)
+                        .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                     ratingAndPriceTrailing
                 }
@@ -129,14 +138,16 @@ struct ClothingDetailView: View {
                     .foregroundStyle(.orange)
                     .font(.title3)
                     .accessibilityHidden(true)
-                Text(viewModel.averageRating, format: .number.precision(.fractionLength(1)))
+                Text(viewModel.averageRating.formatted(.number.precision(.fractionLength(1))))
                     .font(.title3)
             }
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityElement(children: .ignore)
             .frAccessibilityLabel("Note moyenne \(String(format: "%.1f", viewModel.averageRating)) sur 5")
             if item.originalPrice != item.price {
-                Text(item.originalPrice, format: .currency(code: "EUR"))
+                Text(item.originalPrice.formatted(.currency(code: "EUR")))
                     .strikethrough()
+                    .fixedSize(horizontal: false, vertical: true)
                     .frAccessibilityLabel("Ancien prix \(item.originalPrice.formatted(.currency(code: "EUR")))")
             }
         }
@@ -177,7 +188,7 @@ struct ClothingDetailView: View {
             TextField("Partagez ici vos impressions sur cet article", text: reviewText, axis: .vertical)
                 .font(.body)
                 .lineLimit(3...6)
-                .textFieldStyle(.roundedBorder)
+                .textFieldStyle(JoiefullTextFieldStyle())
                 .frAccessibilityLabel("Votre avis")
                 .frAccessibilityHint("Partagez ici vos impressions sur cet article")
         }
@@ -274,6 +285,7 @@ private struct CustomShareButton: View {
     @State private var showCommentSheet = false
     @State private var showShareSheet = false
     @State private var customComment = ""
+    @FocusState private var isInputActive: Bool
     
     var body: some View {
         Button {
@@ -282,16 +294,20 @@ private struct CustomShareButton: View {
             Image(systemName: "square.and.arrow.up")
                 .font(.title3)
                 .foregroundStyle(.primary)
+                .accessibilityHidden(true)
                 .padding(10)
                 .background(.regularMaterial, in: .circle)
-                .accessibilityHidden(true)
-                .frAccessibilityLabel("Partager cet article")
         }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .frAccessibilityLabel("Partager cet article")
+        .accessibilityAddTraits(.isButton)
         .sheet(isPresented: $showCommentSheet) {
             NavigationStack {
                 Form {
                     Section("Votre commentaire") {
                         TextField("Ajouter un commentaire personnalisé...", text: $customComment, axis: .vertical)
+                            .focused($isInputActive)
                             .font(.body)
                             .lineLimit(3...6)
                             .frAccessibilityLabel("Commentaire personnalisé pour le partage")
@@ -330,7 +346,11 @@ private struct CustomShareButton: View {
                     }
                 }
             }
+            .buttonStyle(.automatic)
             .presentationDetents([.medium, .large])
+            .onAppear {
+                isInputActive = true
+            }
         }
         .sheet(isPresented: $showShareSheet) {
             ActivityViewController(activityItems: {

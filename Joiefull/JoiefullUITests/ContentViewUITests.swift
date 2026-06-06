@@ -43,7 +43,7 @@ final class ContentViewUITests: XCTestCase {
         // Given
         // Find the first clothing item card
         // When
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         
@@ -102,7 +102,7 @@ final class ContentViewUITests: XCTestCase {
         try XCTSkipIf(UIDevice.current.userInterfaceIdiom == .pad, "This test is for phone layout only")
         
         // When
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()

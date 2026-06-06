@@ -24,7 +24,7 @@ final class JoiefullUITests: XCTestCase {
         // When
         app.launch()
 
-        let firstCard = app.buttons.firstMatch
+        let firstCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'noté'")).firstMatch
         // Then
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()

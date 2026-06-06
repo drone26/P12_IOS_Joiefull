@@ -48,7 +48,7 @@ final class ClothingDetailViewModel {
         if userRating > 0 {
             ratings.append(Double(userRating))
         }
-        guard !ratings.isEmpty else { return item.rating }
+        guard !ratings.isEmpty else { return 0.0 }
         return ratings.reduce(0, +) / Double(ratings.count)
     }
 
